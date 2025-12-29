@@ -4,9 +4,16 @@ import InvoicesTable from "./components/InvoicesTable";
 import InvoiceForm from "./components/InvoiceForm";
 import InvoiceView from "./components/InvoiceView";
 import InvoiceSuccess from "./components/InvoiceSuccess";
+import LoginPage from "./pages/LoginPage";
 import { Box, Typography } from "@mui/material";
 
 export default function App() {
+  /* ===== AUTH ===== */
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    Boolean(localStorage.getItem("authToken"))
+  );
+
+  /* ===== NAV / FLOW ===== */
   const [section, setSection] = useState("home");
   const [mode, setMode] = useState("list");
   // list | create | view | edit | success
@@ -14,12 +21,21 @@ export default function App() {
   const [invoices, setInvoices] = useState([]);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
-  /* ===== LOAD INVOICES ===== */
+  /* ===== LOAD INVOICES (solo si hay auth) ===== */
   useEffect(() => {
-    fetch("http://localhost:8080/invoices")
+    if (!isAuthenticated) return;
+
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/invoices`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+      },
+    })
       .then((r) => r.json())
-      .then(setInvoices);
-  }, []);
+      .then(setInvoices)
+      .catch(() => {
+        // más adelante manejamos errores / logout
+      });
+  }, [isAuthenticated]);
 
   /* ===== HANDLERS ===== */
   const handleAdd = () => {
@@ -52,6 +68,16 @@ export default function App() {
     setMode("success");
   };
 
+  /* ===== LOGIN FIRST ===== */
+  if (!isAuthenticated) {
+    return (
+      <LoginPage
+        onLoginSuccess={() => setIsAuthenticated(true)}
+      />
+    );
+  }
+
+  /* ===== MAIN APP ===== */
   return (
     <AppLayout selected={section} onSelect={setSection}>
       {/* ===== HOME ===== */}
