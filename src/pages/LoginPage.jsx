@@ -48,8 +48,11 @@ const LoginPage = ({ onLoginSuccess }) => {
       // 🔹 Guardamos token
       localStorage.setItem("authToken", data.token);
 
+      // 🔹 Guardamos usuario (id, email, role)
+      localStorage.setItem("authUser", JSON.stringify(data.user));
+
       // 🔹 AVISAMOS A APP QUE EL LOGIN FUE OK
-      onLoginSuccess();
+      onLoginSuccess(data.user);
 
     } catch (error) {
       setErrorMessage("Usuario o contraseña incorrectos");
