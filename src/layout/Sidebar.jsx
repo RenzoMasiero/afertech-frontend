@@ -25,6 +25,13 @@ export default function Sidebar({ selected, onSelect }) {
           <ListItemText primary="Órdenes de pago" />
         </ListItemButton>
 
+        <ListItemButton
+          selected={selected === "clients"}
+          onClick={() => onSelect("clients")}
+        >
+          <ListItemText primary="Clientes" />
+        </ListItemButton>
+
         <ListItemButton disabled>
           <ListItemText primary="Órdenes de compra" />
         </ListItemButton>

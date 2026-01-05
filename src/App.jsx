@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import { Box, Typography } from "@mui/material";
 import InvoicesFeature from "./features/invoices/InvoicesFeature";
 import PaymentOrdersFeature from "./features/paymentOrders/PaymentOrdersFeature";
+import ClientsFeature from "./features/clients/ClientsFeature";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -47,6 +48,10 @@ export default function App() {
 
       {section === "paymentOrders" && (
         <PaymentOrdersFeature />
+      )}
+
+      {section === "clients" && (
+        <ClientsFeature authUser={authUser} />
       )}
     </AppLayout>
   );

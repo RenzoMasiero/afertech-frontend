@@ -18,17 +18,19 @@ const formatDateTime = (value) => {
 
 export default function InvoiceView({
   invoice,
+  authUser,
   onEdit,
   onDelete,
   onBack,
 }) {
+  const isAdmin = authUser?.role === "ADMIN";
+
   return (
     <Box>
       <Typography variant="h5" mb={2}>
         Detalle de factura
       </Typography>
 
-      {/* Identificación + descripción */}
       <Typography>
         <strong>Cliente:</strong> {invoice.clientName}
       </Typography>
@@ -44,7 +46,6 @@ export default function InvoiceView({
 
       <Divider sx={{ my: 2 }} />
 
-      {/* Importes */}
       <Typography>
         <strong>Total sin IVA:</strong>{" "}
         {formatCurrency(invoice.totalWithoutTax)}
@@ -56,7 +57,6 @@ export default function InvoiceView({
 
       <Divider sx={{ my: 2 }} />
 
-      {/* Referencias */}
       <Typography>
         <strong>Proyecto:</strong> {invoice.projectName}
       </Typography>
@@ -74,7 +74,6 @@ export default function InvoiceView({
 
       <Divider sx={{ my: 2 }} />
 
-      {/* Condiciones */}
       <Typography>
         <strong>Días de pago diferido:</strong>{" "}
         {invoice.deferredPaymentDays}
@@ -82,7 +81,6 @@ export default function InvoiceView({
 
       <Divider sx={{ my: 2 }} />
 
-      {/* Uso real */}
       <Typography>
         <strong>Cargada el:</strong>{" "}
         {formatDateTime(invoice.loadedAt)}
@@ -92,16 +90,21 @@ export default function InvoiceView({
       </Typography>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
-        <Button variant="contained" onClick={() => onEdit(invoice)}>
-          Editar
-        </Button>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={() => onDelete(invoice.id)}
-        >
-          Eliminar
-        </Button>
+        {isAdmin && (
+          <>
+            <Button variant="contained" onClick={() => onEdit(invoice)}>
+              Editar
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => onDelete(invoice.id)}
+            >
+              Eliminar
+            </Button>
+          </>
+        )}
+
         <Button variant="outlined" onClick={onBack}>
           Volver
         </Button>

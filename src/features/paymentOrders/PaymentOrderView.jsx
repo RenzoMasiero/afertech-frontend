@@ -9,17 +9,19 @@ const formatCurrency = (value) =>
 
 export default function PaymentOrderView({
   order,
+  authUser,
   onEdit,
   onDelete,
   onBack,
 }) {
+  const isAdmin = authUser?.role === "ADMIN";
+
   return (
     <Box>
       <Typography variant="h5" mb={2}>
         Detalle de orden de pago
       </Typography>
 
-      {/* Identificación */}
       <Typography>
         <strong>Cliente:</strong> {order.clientName}
       </Typography>
@@ -35,7 +37,6 @@ export default function PaymentOrderView({
 
       <Divider sx={{ my: 2 }} />
 
-      {/* Importes */}
       <Typography>
         <strong>Total sin IVA:</strong>{" "}
         {formatCurrency(order.totalWithoutTax)}
@@ -51,31 +52,28 @@ export default function PaymentOrderView({
 
       <Divider sx={{ my: 2 }} />
 
-      {/* Concepto */}
       <Typography>
         <strong>Concepto:</strong> {order.concept}
       </Typography>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
-        <Button
-          variant="contained"
-          onClick={() => onEdit(order)}
-        >
-          Editar
-        </Button>
+        {isAdmin && (
+          <>
+            <Button variant="contained" onClick={() => onEdit(order)}>
+              Editar
+            </Button>
 
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={() => onDelete(order.id)}
-        >
-          Eliminar
-        </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => onDelete(order.id)}
+            >
+              Eliminar
+            </Button>
+          </>
+        )}
 
-        <Button
-          variant="outlined"
-          onClick={onBack}
-        >
+        <Button variant="outlined" onClick={onBack}>
           Volver
         </Button>
       </Box>
