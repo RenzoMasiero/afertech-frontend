@@ -6,12 +6,6 @@ export default function ClientsTable({ rows, onAdd, onView }) {
     { field: "name", headerName: "Nombre", flex: 1.5 },
     { field: "taxId", headerName: "CUIT", flex: 1 },
     {
-      field: "active",
-      headerName: "Activo",
-      flex: 0.5,
-      renderCell: (params) => (params.value ? "Sí" : "No"),
-    },
-    {
       field: "actions",
       headerName: "Acciones",
       sortable: false,

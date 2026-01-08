@@ -15,7 +15,10 @@ function mapInvoiceToUI(invoice) {
     projectName: invoice.projectName,
 
     purchaseOrderId: invoice.purchaseOrderId,
+    purchaseOrderNumber: invoice.purchaseOrderNumber,
+
     paymentOrderId: invoice.paymentOrderId,
+    paymentOrderNumber: invoice.paymentOrderNumber,
 
     invoiceNumber: invoice.invoiceNumber,
     issueDate: invoice.issueDate,

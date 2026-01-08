@@ -42,9 +42,22 @@ export default function ClientsFeature({ authUser }) {
     );
     if (!ok) return;
 
-    await deleteClient(id);
-    setClients((prev) => prev.filter((c) => c.id !== id));
-    setMode("list");
+    try {
+      await deleteClient(id);
+      setClients((prev) => prev.filter((c) => c.id !== id));
+      setMode("list");
+    } catch (error) {
+      const status = error?.response?.status;
+
+      if (status === 409) {
+        alert(
+          "No se puede eliminar el cliente porque tiene facturas asociadas."
+        );
+        return;
+      }
+
+      alert("Ocurrió un error al eliminar el cliente.");
+    }
   };
 
   if (mode === "list") {

@@ -23,7 +23,6 @@ export default function InvoiceForm({
       clientId: "",
       projectId: "",
       purchaseOrderId: "",
-      paymentOrderId: null,
       invoiceNumber: "",
       issueDate: "",
       description: "",
@@ -51,20 +50,23 @@ export default function InvoiceForm({
 
   const handleSubmit = () => {
     onSubmit({
-      ...invoice,
       clientId: Number(invoice.clientId),
       projectId: Number(invoice.projectId),
-      purchaseOrderId: invoice.purchaseOrderId
-        ? Number(invoice.purchaseOrderId)
-        : null,
+      purchaseOrderId: Number(invoice.purchaseOrderId),
+      invoiceNumber: invoice.invoiceNumber,
+      issueDate: invoice.issueDate,
+      description: invoice.description,
+      totalWithoutTax: Number(invoice.totalWithoutTax),
+      totalWithTax: Number(invoice.totalWithTax),
+      deferredPaymentDays: Number(invoice.deferredPaymentDays),
+      purchaseOrderPercentage: Number(invoice.purchaseOrderPercentage),
+      id: invoice.id,
     });
   };
 
   const filteredClients = useMemo(() => {
     const q = clientFilter.toLowerCase();
-    return clients.filter((c) =>
-      c.name.toLowerCase().includes(q)
-    );
+    return clients.filter((c) => c.name.toLowerCase().includes(q));
   }, [clients, clientFilter]);
 
   return (
@@ -137,7 +139,7 @@ export default function InvoiceForm({
             displayEmpty
           >
             <MenuItem value="">
-              <em>Sin orden de compra</em>
+              <em>Seleccionar orden de compra</em>
             </MenuItem>
 
             {purchaseOrders.map((po) => (
@@ -146,6 +148,16 @@ export default function InvoiceForm({
               </MenuItem>
             ))}
           </Select>
+        </Grid>
+
+        {/* Orden de pago (solo lectura) */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Orden de pago"
+            value={invoice.paymentOrderNumber || "Sin orden de pago"}
+            InputProps={{ readOnly: true }}
+          />
         </Grid>
 
         {[

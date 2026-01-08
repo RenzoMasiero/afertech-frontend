@@ -30,15 +30,11 @@ export default function ClientView({
       <Typography>
         <strong>CUIT:</strong> {client.taxId}
       </Typography>
-      <Typography>
-        <strong>Activo:</strong> {client.active ? "Sí" : "No"}
-      </Typography>
 
       <Divider sx={{ my: 2 }} />
 
       <Typography>
-        <strong>Cargado el:</strong>{" "}
-        {formatDateTime(client.loadedAt)}
+        <strong>Cargado el:</strong> {formatDateTime(client.loadedAt)}
       </Typography>
       <Typography>
         <strong>Cargado por:</strong> {client.loadedBy}

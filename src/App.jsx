@@ -47,7 +47,7 @@ export default function App() {
       )}
 
       {section === "paymentOrders" && (
-        <PaymentOrdersFeature />
+        <PaymentOrdersFeature authUser={authUser} />
       )}
 
       {section === "clients" && (

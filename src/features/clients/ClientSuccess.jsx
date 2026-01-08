@@ -17,9 +17,6 @@ export default function ClientSuccess({ client, onBack }) {
       <Typography>
         <strong>CUIT:</strong> {client.taxId}
       </Typography>
-      <Typography>
-        <strong>Activo:</strong> {client.active ? "Sí" : "No"}
-      </Typography>
 
       <Divider sx={{ my: 2 }} />
 

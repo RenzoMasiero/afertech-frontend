@@ -52,9 +52,22 @@ export default function InvoicesFeature({ authUser }) {
     );
     if (!ok) return;
 
-    await deleteInvoice(id);
-    setInvoices((prev) => prev.filter((i) => i.id !== id));
-    setMode("list");
+    try {
+      await deleteInvoice(id);
+      setInvoices((prev) => prev.filter((i) => i.id !== id));
+      setMode("list");
+    } catch (error) {
+      const status = error?.response?.status;
+
+      if (status === 409) {
+        alert(
+          "No se puede eliminar la factura porque tiene una orden de pago asociada."
+        );
+        return;
+      }
+
+      alert("Ocurrió un error al eliminar la factura.");
+    }
   };
 
   if (mode === "list") {

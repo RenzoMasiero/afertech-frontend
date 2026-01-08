@@ -4,7 +4,7 @@
  * Convierte una orden de pago del backend
  * al modelo de UI (reflejo exacto del response)
  */
-function mapPaymentOrderToUI(order) {
+export function mapPaymentOrderToUI(order) {
   return {
     id: order.id,
 
@@ -15,7 +15,10 @@ function mapPaymentOrderToUI(order) {
     projectName: order.projectName,
 
     invoiceId: order.invoiceId,
+    invoiceNumber: order.invoiceNumber,
+
     purchaseOrderId: order.purchaseOrderId,
+    purchaseOrderNumber: order.purchaseOrderNumber,
 
     paymentOrderNumber: order.paymentOrderNumber,
     issueDate: order.issueDate,

@@ -1,25 +1,20 @@
-import { Box, Button, Grid, TextField, Typography, Switch, FormControlLabel } from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 
-export default function ClientForm({
-  onCancel,
-  onSubmit,
-  initialData,
-}) {
+export default function ClientForm({ onCancel, onSubmit, initialData }) {
   const [client, setClient] = useState(
     initialData || {
       name: "",
       taxId: "",
-      active: true,
     }
   );
 
   const handleChange = (e) => {
-    const { name, value, checked, type } = e.target;
+    const { name, value } = e.target;
 
     setClient({
       ...client,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     });
   };
 
@@ -51,19 +46,6 @@ export default function ClientForm({
             label="CUIT"
             value={client.taxId}
             onChange={handleChange}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Switch
-                name="active"
-                checked={Boolean(client.active)}
-                onChange={handleChange}
-              />
-            }
-            label="Activo"
           />
         </Grid>
       </Grid>

@@ -11,14 +11,16 @@ import {
   deletePaymentOrder,
 } from "../../api/paymentOrders.api";
 
-import { mapPaymentOrdersPageToUI } from "../../mappers/paymentOrder.mapper";
+import {
+  mapPaymentOrdersPageToUI,
+  mapPaymentOrderToUI,
+} from "../../mappers/paymentOrder.mapper";
 
 import { getClients } from "../../api/clients.api";
 import { getProjects } from "../../api/projects.api";
 import { getInvoices } from "../../api/invoices.api";
-import { getPurchaseOrders } from "../../api/purchaseOrders.api";
 
-export default function PaymentOrdersFeature() {
+export default function PaymentOrdersFeature({ authUser }) {
   const [mode, setMode] = useState("list");
   const [paymentOrders, setPaymentOrders] = useState([]);
   const [selectedPaymentOrder, setSelectedPaymentOrder] = useState(null);
@@ -26,7 +28,6 @@ export default function PaymentOrdersFeature() {
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
   const [invoices, setInvoices] = useState([]);
-  const [purchaseOrders, setPurchaseOrders] = useState([]);
 
   useEffect(() => {
     getPaymentOrders().then((r) => {
@@ -37,7 +38,6 @@ export default function PaymentOrdersFeature() {
     getClients().then((r) => setClients(r.items));
     getProjects().then((r) => setProjects(r.items));
     getInvoices().then((r) => setInvoices(r.items));
-    getPurchaseOrders().then((r) => setPurchaseOrders(r.items));
   }, []);
 
   const handleAdd = () => {
@@ -56,23 +56,26 @@ export default function PaymentOrdersFeature() {
   };
 
   const handleSave = async (data) => {
-    let saved;
+    let response;
 
     if (data.id) {
-      saved = await updatePaymentOrder(data.id, data);
+      response = await updatePaymentOrder(data.id, data);
     } else {
-      saved = await createPaymentOrder(data);
+      response = await createPaymentOrder(data);
     }
 
+    // 🔒 Fuente única de verdad: mapper SIEMPRE
+    const mappedSaved = mapPaymentOrderToUI(response);
+
     setPaymentOrders((prev) => {
-      const exists = prev.find((o) => o.id === saved.id);
-      if (exists) {
-        return prev.map((o) => (o.id === saved.id ? saved : o));
-      }
-      return [...prev, saved];
+      const exists = prev.find((o) => o.id === mappedSaved.id);
+      return exists
+        ? prev.map((o) => (o.id === mappedSaved.id ? mappedSaved : o))
+        : [...prev, mappedSaved];
     });
 
-    setSelectedPaymentOrder(saved);
+    // 🔒 Orden explícito: primero data, después modo
+    setSelectedPaymentOrder(mappedSaved);
     setMode("success");
   };
 
@@ -80,12 +83,23 @@ export default function PaymentOrdersFeature() {
     const confirmed = window.confirm(
       "¿Estás seguro de que querés eliminar esta orden de pago? Esta acción no se puede deshacer."
     );
-
     if (!confirmed) return;
 
-    await deletePaymentOrder(id);
-    setPaymentOrders((prev) => prev.filter((o) => o.id !== id));
-    setMode("list");
+    try {
+      await deletePaymentOrder(id);
+      setPaymentOrders((prev) => prev.filter((o) => o.id !== id));
+      setSelectedPaymentOrder(null);
+      setMode("list");
+    } catch (error) {
+      const status = error?.response?.status;
+      if (status === 409) {
+        alert(
+          "No se puede eliminar la orden de pago porque está asociada a una factura."
+        );
+        return;
+      }
+      alert("Ocurrió un error al eliminar la orden de pago.");
+    }
   };
 
   if (mode === "list") {
@@ -104,7 +118,6 @@ export default function PaymentOrdersFeature() {
         clients={clients}
         projects={projects}
         invoices={invoices}
-        purchaseOrders={purchaseOrders}
         onCancel={() => setMode("list")}
         onSubmit={handleSave}
       />
@@ -117,7 +130,6 @@ export default function PaymentOrdersFeature() {
         clients={clients}
         projects={projects}
         invoices={invoices}
-        purchaseOrders={purchaseOrders}
         initialData={selectedPaymentOrder}
         onCancel={() => setMode("view")}
         onSubmit={handleSave}
@@ -129,6 +141,7 @@ export default function PaymentOrdersFeature() {
     return (
       <PaymentOrderView
         order={selectedPaymentOrder}
+        authUser={authUser}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onBack={() => setMode("list")}
@@ -136,7 +149,10 @@ export default function PaymentOrdersFeature() {
     );
   }
 
-  if (mode === "success" && selectedPaymentOrder) {
+  if (mode === "success") {
+    // 🔒 NUNCA renderizar Success sin entidad válida
+    if (!selectedPaymentOrder) return null;
+
     return (
       <PaymentOrderSuccess
         order={selectedPaymentOrder}
