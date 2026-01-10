@@ -26,18 +26,40 @@ export default function Sidebar({ selected, onSelect }) {
         </ListItemButton>
 
         <ListItemButton
+          selected={selected === "purchaseOrders"}
+          onClick={() => onSelect("purchaseOrders")}
+        >
+          <ListItemText primary="Órdenes de compra" />
+        </ListItemButton>
+
+        <ListItemButton
           selected={selected === "clients"}
           onClick={() => onSelect("clients")}
         >
           <ListItemText primary="Clientes" />
         </ListItemButton>
 
-        <ListItemButton disabled>
-          <ListItemText primary="Órdenes de compra" />
+        <ListItemButton
+          selected={selected === "projects"}
+          onClick={() => onSelect("projects")}
+        >
+          <ListItemText primary="Proyectos" />
         </ListItemButton>
 
-        <ListItemButton disabled>
-          <ListItemText primary="Proyectos" />
+        {/* ✅ TIPOS DE COSTO FIJO */}
+        <ListItemButton
+          selected={selected === "costTypes"}
+          onClick={() => onSelect("costTypes")}
+        >
+          <ListItemText primary="Tipos de costo fijo" />
+        </ListItemButton>
+
+        {/* ✅ TIPOS DE COSTO VARIABLE */}
+        <ListItemButton
+          selected={selected === "variableCostTypes"}
+          onClick={() => onSelect("variableCostTypes")}
+        >
+          <ListItemText primary="Tipos de costo variable" />
         </ListItemButton>
       </List>
     </Box>

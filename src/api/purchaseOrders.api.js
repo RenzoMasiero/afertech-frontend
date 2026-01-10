@@ -1,9 +1,8 @@
-// src/api/purchaseOrders.api.js
 import { api } from "./http";
 
 /**
  * GET /purchase-orders
- * Devuelve lista paginada de órdenes de compra
+ * Lista paginada de órdenes de compra
  */
 export async function getPurchaseOrders() {
   const response = await api.get("/purchase-orders");
