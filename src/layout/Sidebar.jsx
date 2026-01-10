@@ -46,7 +46,34 @@ export default function Sidebar({ selected, onSelect }) {
           <ListItemText primary="Proyectos" />
         </ListItemButton>
 
-        {/* ✅ TIPOS DE COSTO FIJO */}
+        <ListItemButton
+          selected={selected === "suppliers"}
+          onClick={() => onSelect("suppliers")}
+        >
+          <ListItemText primary="Proveedores" />
+        </ListItemButton>
+
+        <ListItemButton
+          selected={selected === "employees"}        
+          onClick={() => onSelect("employees")}        
+        >
+          <ListItemText primary="Empleados" />      
+        </ListItemButton>
+
+        <ListItemButton
+          selected={selected === "variableCosts"}
+          onClick={() => onSelect("variableCosts")}
+        >
+          <ListItemText primary="Costos variables" />
+        </ListItemButton>
+
+        <ListItemButton
+          selected={selected === "fixedCosts"}
+          onClick={() => onSelect("fixedCosts")}
+        >
+          <ListItemText primary="Costos fijos" />
+        </ListItemButton>
+
         <ListItemButton
           selected={selected === "costTypes"}
           onClick={() => onSelect("costTypes")}
@@ -54,7 +81,6 @@ export default function Sidebar({ selected, onSelect }) {
           <ListItemText primary="Tipos de costo fijo" />
         </ListItemButton>
 
-        {/* ✅ TIPOS DE COSTO VARIABLE */}
         <ListItemButton
           selected={selected === "variableCostTypes"}
           onClick={() => onSelect("variableCostTypes")}
