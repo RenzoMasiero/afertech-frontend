@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 
 export default function AppLayout({ selected, onSelect, children }) {
   return (
-    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ height: "300vh", display: "flex", flexDirection: "column" }}>
       <Header />
 
       <Box sx={{ flex: 1, display: "flex" }}>

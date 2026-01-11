@@ -4,15 +4,15 @@ export default function Header() {
   return (
     <Box
       sx={{
-        height: 56,
+        height: 100,
         backgroundColor: "#03a9f4",
         display: "flex",
         alignItems: "center",
-        paddingX: 2,
+        paddingX: 4,
       }}
     >
-      <Typography variant="h6" sx={{ color: "white" }}>
-        Gestión Total
+      <Typography variant="h4" sx={{ color: "white" }}>
+        Gestión Total - AferTech
       </Typography>
     </Box>
   );
