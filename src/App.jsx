@@ -47,7 +47,7 @@ export default function App() {
             alignItems: "center",
           }}
         >
-          <Typography variant="h3">Afertech</Typography>
+          <Typography variant="h1">Afertech</Typography>
         </Box>
       )}
 

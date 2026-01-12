@@ -32,7 +32,13 @@ function SectionTitle({ children }) {
 
 export default function Sidebar({ selected, onSelect }) {
   return (
-    <Box sx={{ width: 220, backgroundColor: "#e0e0e0", height: "100%" }}>
+    <Box
+      sx={{
+        width: 220,
+        backgroundColor: "#e0e0e0",
+        height: "100vh",
+      }}
+    >
       <List>
         {/* Home */}
         <ListItemButton
