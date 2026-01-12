@@ -1,5 +1,5 @@
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("es-AR", {
@@ -9,22 +9,35 @@ const formatCurrency = (value) =>
   }).format(typeof value === "number" ? value : 0);
 
 export default function InvoicesTable({ rows, onAdd, onView }) {
-  const columns = [
-    { field: "invoiceNumber", headerName: "N° Factura", flex: 1 },
-    { field: "clientName", headerName: "Cliente", flex: 1.5 },
-    { field: "issueDate", headerName: "Fecha de factura", flex: 1 },
+  const isMobile = useMediaQuery("(max-width:900px)");
 
+  const columns = [
+    {
+      field: "invoiceNumber",
+      headerName: "N° Factura",
+      ...(isMobile ? { minWidth: 140 } : { flex: 1 }),
+    },
+    {
+      field: "clientName",
+      headerName: "Cliente",
+      ...(isMobile ? { minWidth: 160 } : { flex: 1.5 }),
+    },
+    {
+      field: "issueDate",
+      headerName: "Fecha de factura",
+      ...(isMobile ? { minWidth: 180 } : { flex: 1 }),
+    },
     {
       field: "totalWithoutTax",
       headerName: "Total sin IVA",
-      flex: 1,
+      ...(isMobile ? { minWidth: 160 } : { flex: 1 }),
       renderCell: (params) =>
         formatCurrency(params.row.totalWithoutTax),
     },
     {
       field: "totalWithTax",
       headerName: "Total con IVA",
-      flex: 1,
+      ...(isMobile ? { minWidth: 160 } : { flex: 1 }),
       renderCell: (params) =>
         formatCurrency(params.row.totalWithTax),
     },
@@ -32,6 +45,7 @@ export default function InvoicesTable({ rows, onAdd, onView }) {
       field: "actions",
       headerName: "Acciones",
       sortable: false,
+      ...(isMobile ? { minWidth: 120 } : {}),
       renderCell: (params) => (
         <Button size="small" onClick={() => onView(params.row)}>
           Ver

@@ -1,35 +1,38 @@
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 
 export default function EmployeesTable({ rows, onAdd, onView }) {
+  const isMobile = useMediaQuery("(max-width:900px)");
+
   const columns = [
     {
       field: "employee",
       headerName: "Empleado",
-      flex: 1.5,
+      ...(isMobile ? { minWidth: 200 } : { flex: 1.5 }),
       renderCell: (params) =>
         `${params.row.firstName} ${params.row.lastName}`,
     },
     {
       field: "documentNumber",
       headerName: "Documento",
-      flex: 1,
+      ...(isMobile ? { minWidth: 160 } : { flex: 1 }),
     },
     {
       field: "hireDate",
       headerName: "Fecha de ingreso",
-      flex: 1,
+      ...(isMobile ? { minWidth: 160 } : { flex: 1 }),
     },
     {
       field: "terminationDate",
       headerName: "Fecha de egreso",
-      flex: 1,
+      ...(isMobile ? { minWidth: 160 } : { flex: 1 }),
       renderCell: (params) => params.row.terminationDate ?? "-",
     },
     {
       field: "actions",
       headerName: "Acciones",
       sortable: false,
+      ...(isMobile ? { minWidth: 120 } : {}),
       renderCell: (params) => (
         <Button size="small" onClick={() => onView(params.row)}>
           Ver
