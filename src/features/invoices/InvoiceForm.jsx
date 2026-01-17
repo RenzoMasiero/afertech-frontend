@@ -1,12 +1,14 @@
 import {
   Box,
   Button,
-  Grid,
   TextField,
   Typography,
   Select,
   MenuItem,
   ListSubheader,
+  Stack,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useMemo, useState } from "react";
 
@@ -75,15 +77,17 @@ export default function InvoiceForm({
         {invoice.id ? "Editar factura" : "Nueva factura"}
       </Typography>
 
-      <Grid container spacing={2}>
+      {/* LAYOUT VERTICAL REAL */}
+      <Stack spacing={2}>
         {/* Cliente */}
-        <Grid item xs={12} md={6}>
+        <FormControl fullWidth>
+          <InputLabel id="client-label">Cliente</InputLabel>
           <Select
-            fullWidth
+            labelId="client-label"
             name="clientId"
             value={invoice.clientId}
+            label="Cliente"
             onChange={handleChange}
-            displayEmpty
           >
             <ListSubheader>
               <TextField
@@ -96,70 +100,59 @@ export default function InvoiceForm({
               />
             </ListSubheader>
 
-            <MenuItem value="">
-              <em>Seleccionar cliente</em>
-            </MenuItem>
-
             {filteredClients.map((client) => (
               <MenuItem key={client.id} value={client.id}>
                 {client.name}
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
         {/* Proyecto */}
-        <Grid item xs={12} md={6}>
+        <FormControl fullWidth>
+          <InputLabel id="project-label">Proyecto</InputLabel>
           <Select
-            fullWidth
+            labelId="project-label"
             name="projectId"
             value={invoice.projectId}
+            label="Proyecto"
             onChange={handleChange}
-            displayEmpty
           >
-            <MenuItem value="">
-              <em>Seleccionar proyecto</em>
-            </MenuItem>
-
             {projects.map((project) => (
               <MenuItem key={project.id} value={project.id}>
                 {project.name}
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
         {/* Orden de compra */}
-        <Grid item xs={12} md={6}>
+        <FormControl fullWidth>
+          <InputLabel id="po-label">Orden de compra</InputLabel>
           <Select
-            fullWidth
+            labelId="po-label"
             name="purchaseOrderId"
             value={invoice.purchaseOrderId}
+            label="Orden de compra"
             onChange={handleChange}
-            displayEmpty
           >
-            <MenuItem value="">
-              <em>Seleccionar orden de compra</em>
-            </MenuItem>
-
             {purchaseOrders.map((po) => (
               <MenuItem key={po.id} value={po.id}>
                 {po.purchaseOrderNumber}
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
         {/* Orden de pago (solo lectura) */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            label="Orden de pago"
-            value={invoice.paymentOrderNumber || "Sin orden de pago"}
-            InputProps={{ readOnly: true }}
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          label="Orden de pago"
+          value={invoice.paymentOrderNumber || "Sin orden de pago"}
+          InputProps={{ readOnly: true }}
+        />
 
+        {/* Campos estándar */}
         {[
           ["invoiceNumber", "N° Factura"],
           ["issueDate", "Fecha de factura", "date"],
@@ -169,24 +162,23 @@ export default function InvoiceForm({
           ["deferredPaymentDays", "Días de pago diferido", "number"],
           ["purchaseOrderPercentage", "% Orden de compra", "number"],
         ].map(([name, label, type]) => (
-          <Grid item xs={12} md={6} key={name}>
-            <TextField
-              fullWidth
-              name={name}
-              label={label}
-              type={type || "text"}
-              value={invoice[name] ?? ""}
-              onChange={handleChange}
-              InputLabelProps={type === "date" ? { shrink: true } : {}}
-              inputProps={
-                name === "purchaseOrderPercentage"
-                  ? { min: 0, max: 100 }
-                  : undefined
-              }
-            />
-          </Grid>
+          <TextField
+            key={name}
+            fullWidth
+            name={name}
+            label={label}
+            type={type || "text"}
+            value={invoice[name] ?? ""}
+            onChange={handleChange}
+            InputLabelProps={type === "date" ? { shrink: true } : {}}
+            inputProps={
+              name === "purchaseOrderPercentage"
+                ? { min: 0, max: 100 }
+                : undefined
+            }
+          />
         ))}
-      </Grid>
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

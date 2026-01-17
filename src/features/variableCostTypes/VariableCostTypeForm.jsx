@@ -1,4 +1,10 @@
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useState } from "react";
 
 export default function VariableCostTypeForm({
@@ -34,20 +40,20 @@ export default function VariableCostTypeForm({
   return (
     <Box>
       <Typography variant="h5" mb={2}>
-        {isEdit ? "Editar tipo de costo variable" : "Nuevo tipo de costo variable"}
+        {isEdit
+          ? "Editar tipo de costo variable"
+          : "Nuevo tipo de costo variable"}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="name"
-            label="Nombre"
-            value={type.name ?? ""}
-            onChange={handleChange}
-          />
-        </Grid>
-      </Grid>
+      <Stack spacing={2}>
+        <TextField
+          fullWidth
+          name="name"
+          label="Nombre"
+          value={type.name ?? ""}
+          onChange={handleChange}
+        />
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

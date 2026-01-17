@@ -1,4 +1,10 @@
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useState } from "react";
 
 export default function ClientForm({ onCancel, onSubmit, initialData }) {
@@ -11,11 +17,7 @@ export default function ClientForm({ onCancel, onSubmit, initialData }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setClient({
-      ...client,
-      [name]: value,
-    });
+    setClient({ ...client, [name]: value });
   };
 
   const handleSubmit = () => {
@@ -28,27 +30,23 @@ export default function ClientForm({ onCancel, onSubmit, initialData }) {
         {client.id ? "Editar cliente" : "Nuevo cliente"}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="name"
-            label="Nombre"
-            value={client.name}
-            onChange={handleChange}
-          />
-        </Grid>
+      <Stack spacing={2}>
+        <TextField
+          fullWidth
+          name="name"
+          label="Nombre"
+          value={client.name}
+          onChange={handleChange}
+        />
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="taxId"
-            label="CUIT"
-            value={client.taxId}
-            onChange={handleChange}
-          />
-        </Grid>
-      </Grid>
+        <TextField
+          fullWidth
+          name="taxId"
+          label="CUIT"
+          value={client.taxId}
+          onChange={handleChange}
+        />
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

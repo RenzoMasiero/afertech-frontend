@@ -1,4 +1,10 @@
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useState } from "react";
 
 export default function EmployeesForm({
@@ -43,63 +49,53 @@ export default function EmployeesForm({
         {isEdit ? "Editar empleado" : "Nuevo empleado"}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="firstName"
-            label="Nombre"
-            value={employee.firstName}
-            onChange={handleChange}
-          />
-        </Grid>
+      <Stack spacing={2}>
+        <TextField
+          fullWidth
+          name="firstName"
+          label="Nombre"
+          value={employee.firstName}
+          onChange={handleChange}
+        />
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="lastName"
-            label="Apellido"
-            value={employee.lastName}
-            onChange={handleChange}
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          name="lastName"
+          label="Apellido"
+          value={employee.lastName}
+          onChange={handleChange}
+        />
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="documentNumber"
-            label="Documento"
-            value={employee.documentNumber}
-            onChange={handleChange}
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          name="documentNumber"
+          label="Documento"
+          value={employee.documentNumber}
+          onChange={handleChange}
+        />
 
-        <Grid item xs={12} md={6}>
+        <TextField
+          fullWidth
+          name="hireDate"
+          label="Fecha de ingreso"
+          type="date"
+          value={employee.hireDate}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
+
+        {isEdit && (
           <TextField
             fullWidth
-            name="hireDate"
-            label="Fecha de ingreso"
+            name="terminationDate"
+            label="Fecha de egreso"
             type="date"
-            value={employee.hireDate}
+            value={employee.terminationDate ?? ""}
             onChange={handleChange}
             InputLabelProps={{ shrink: true }}
           />
-        </Grid>
-
-        {isEdit && (
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              name="terminationDate"
-              label="Fecha de egreso"
-              type="date"
-              value={employee.terminationDate ?? ""}
-              onChange={handleChange}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
         )}
-      </Grid>
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

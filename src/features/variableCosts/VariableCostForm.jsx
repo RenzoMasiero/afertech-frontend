@@ -1,11 +1,13 @@
 import {
   Box,
   Button,
-  Grid,
   TextField,
   Typography,
   Select,
   MenuItem,
+  Stack,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -59,55 +61,52 @@ export default function VariableCostForm({
         {isEdit ? "Editar costo variable" : "Nuevo costo variable"}
       </Typography>
 
-      <Grid container spacing={2}>
+      <Stack spacing={2}>
         {/* Tipo de costo */}
-        <Grid item xs={12} md={6}>
+        <FormControl fullWidth>
+          <InputLabel id="cost-type-label">Tipo de costo</InputLabel>
           <Select
-            fullWidth
+            labelId="cost-type-label"
             name="costTypeId"
             value={cost.costTypeId}
+            label="Tipo de costo"
             onChange={handleChange}
-            displayEmpty
           >
-            <MenuItem value="">
-              <em>Seleccionar tipo de costo</em>
-            </MenuItem>
             {costTypes.map((t) => (
               <MenuItem key={t.id} value={t.id}>
                 {t.name}
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
         {/* Proveedor */}
-        <Grid item xs={12} md={6}>
+        <FormControl fullWidth>
+          <InputLabel id="supplier-label">Proveedor</InputLabel>
           <Select
-            fullWidth
+            labelId="supplier-label"
             name="supplierId"
             value={cost.supplierId}
+            label="Proveedor"
             onChange={handleChange}
-            displayEmpty
           >
-            <MenuItem value="">
-              <em>Seleccionar proveedor</em>
-            </MenuItem>
             {suppliers.map((s) => (
               <MenuItem key={s.id} value={s.id}>
                 {s.name}
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
         {/* Proyecto (opcional) */}
-        <Grid item xs={12} md={6}>
+        <FormControl fullWidth>
+          <InputLabel id="project-label">Proyecto</InputLabel>
           <Select
-            fullWidth
+            labelId="project-label"
             name="projectId"
             value={cost.projectId ?? ""}
+            label="Proyecto"
             onChange={handleChange}
-            displayEmpty
           >
             <MenuItem value="">
               <em>Sin proyecto</em>
@@ -118,57 +117,49 @@ export default function VariableCostForm({
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
         {/* Monto */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="amount"
-            label="Monto"
-            type="number"
-            value={cost.amount}
-            onChange={handleChange}
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          name="amount"
+          label="Monto"
+          type="number"
+          value={cost.amount}
+          onChange={handleChange}
+        />
 
         {/* Mes de imputación */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="allocationMonth"
-            label="Mes de imputación"
-            type="date"
-            value={cost.allocationMonth}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          name="allocationMonth"
+          label="Mes de imputación"
+          type="date"
+          value={cost.allocationMonth}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
 
         {/* Fecha de pago */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="paymentDate"
-            label="Fecha de pago"
-            type="date"
-            value={cost.paymentDate}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          name="paymentDate"
+          label="Fecha de pago"
+          type="date"
+          value={cost.paymentDate}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
 
         {/* Descripción */}
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            name="description"
-            label="Descripción"
-            value={cost.description}
-            onChange={handleChange}
-          />
-        </Grid>
-      </Grid>
+        <TextField
+          fullWidth
+          name="description"
+          label="Descripción"
+          value={cost.description}
+          onChange={handleChange}
+        />
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

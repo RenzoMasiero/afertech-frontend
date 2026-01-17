@@ -1,4 +1,10 @@
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useState } from "react";
 
 export default function ProjectForm({ onCancel, onSubmit, initialData }) {
@@ -28,29 +34,25 @@ export default function ProjectForm({ onCancel, onSubmit, initialData }) {
         {project.id ? "Editar proyecto" : "Nuevo proyecto"}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            name="name"
-            label="Nombre"
-            value={project.name}
-            onChange={handleChange}
-          />
-        </Grid>
+      <Stack spacing={2}>
+        <TextField
+          fullWidth
+          name="name"
+          label="Nombre"
+          value={project.name}
+          onChange={handleChange}
+        />
 
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            name="description"
-            label="Descripción"
-            multiline
-            rows={4}
-            value={project.description}
-            onChange={handleChange}
-          />
-        </Grid>
-      </Grid>
+        <TextField
+          fullWidth
+          name="description"
+          label="Descripción"
+          multiline
+          rows={4}
+          value={project.description}
+          onChange={handleChange}
+        />
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

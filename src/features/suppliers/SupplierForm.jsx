@@ -1,4 +1,10 @@
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useState } from "react";
 
 export default function SupplierForm({
@@ -40,27 +46,23 @@ export default function SupplierForm({
         {isEdit ? "Editar proveedor" : "Nuevo proveedor"}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="name"
-            label="Proveedor"
-            value={supplier.name ?? ""}
-            onChange={handleChange}
-          />
-        </Grid>
+      <Stack spacing={2}>
+        <TextField
+          fullWidth
+          name="name"
+          label="Proveedor"
+          value={supplier.name ?? ""}
+          onChange={handleChange}
+        />
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="taxId"
-            label="CUIT"
-            value={supplier.taxId ?? ""}
-            onChange={handleChange}
-          />
-        </Grid>
-      </Grid>
+        <TextField
+          fullWidth
+          name="taxId"
+          label="CUIT"
+          value={supplier.taxId ?? ""}
+          onChange={handleChange}
+        />
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

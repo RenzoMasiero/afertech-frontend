@@ -1,11 +1,13 @@
 import {
   Box,
   Button,
-  Grid,
   TextField,
   Typography,
   Select,
   MenuItem,
+  Stack,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -43,9 +45,7 @@ export default function FixedCostForm({
     onSubmit({
       id: fixedCost.id,
       costTypeId: Number(fixedCost.costTypeId),
-      employeeId: isSalary
-        ? Number(fixedCost.employeeId)
-        : null,
+      employeeId: isSalary ? Number(fixedCost.employeeId) : null,
       amount: Number(fixedCost.amount),
       allocationMonth: fixedCost.allocationMonth,
       paymentDate: fixedCost.paymentDate,
@@ -59,119 +59,110 @@ export default function FixedCostForm({
         {fixedCost.id ? "Editar costo fijo" : "Nuevo costo fijo"}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+      <Stack spacing={2}>
+        {/* Tipo de costo */}
+        <FormControl fullWidth>
+          <InputLabel id="cost-type-label">Tipo de costo</InputLabel>
           <Select
-            fullWidth
+            labelId="cost-type-label"
             name="costTypeId"
             value={fixedCost.costTypeId}
+            label="Tipo de costo"
             onChange={handleChange}
-            displayEmpty
           >
-            <MenuItem value="">
-              <em>Seleccionar tipo de costo</em>
-            </MenuItem>
-
             {costTypes.map((type) => (
               <MenuItem key={type.id} value={type.id}>
                 {type.name}
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
+        {/* Empleado (solo SUELDO) */}
         {isSalary && (
-          <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel id="employee-label">Empleado</InputLabel>
             <Select
-              fullWidth
+              labelId="employee-label"
               name="employeeId"
               value={fixedCost.employeeId}
+              label="Empleado"
               onChange={handleChange}
-              displayEmpty
             >
-              <MenuItem value="">
-                <em>Seleccionar empleado</em>
-              </MenuItem>
-
               {employees.map((emp) => (
                 <MenuItem key={emp.id} value={emp.id}>
                   {emp.firstName} {emp.lastName}
                 </MenuItem>
               ))}
             </Select>
-          </Grid>
+          </FormControl>
         )}
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="amount"
-            label="Monto"
-            type="number"
-            value={fixedCost.amount}
-            onChange={handleChange}
-          />
-        </Grid>
+        {/* Monto */}
+        <TextField
+          fullWidth
+          name="amount"
+          label="Monto"
+          type="number"
+          value={fixedCost.amount}
+          onChange={handleChange}
+        />
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="allocationMonth"
-            label="Mes imputado"
-            type="date"
-            value={fixedCost.allocationMonth}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
+        {/* Mes imputado */}
+        <TextField
+          fullWidth
+          name="allocationMonth"
+          label="Mes imputado"
+          type="date"
+          value={fixedCost.allocationMonth}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="paymentDate"
-            label="Fecha de pago"
-            type="date"
-            value={fixedCost.paymentDate}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
+        {/* Fecha de pago */}
+        <TextField
+          fullWidth
+          name="paymentDate"
+          label="Fecha de pago"
+          type="date"
+          value={fixedCost.paymentDate}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
 
+        {/* Descripción */}
         {!isSalary && (
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              name="description"
-              label="Descripción"
-              value={fixedCost.description}
-              onChange={handleChange}
-            />
-          </Grid>
+          <TextField
+            fullWidth
+            name="description"
+            label="Descripción"
+            value={fixedCost.description}
+            onChange={handleChange}
+          />
         )}
 
+        {/* Mes del sueldo */}
         {isSalary && (
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              name="description"
-              label="Mes del sueldo"
-              type="month"
-              value={
-                fixedCost.description
-                  ? fixedCost.description.slice(0, 7)
-                  : ""
-              }
-              onChange={(e) =>
-                setFixedCost({
-                  ...fixedCost,
-                  description: e.target.value + "-01",
-                })
-              }
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
+          <TextField
+            fullWidth
+            name="description"
+            label="Mes del sueldo"
+            type="month"
+            value={
+              fixedCost.description
+                ? fixedCost.description.slice(0, 7)
+                : ""
+            }
+            onChange={(e) =>
+              setFixedCost({
+                ...fixedCost,
+                description: e.target.value + "-01",
+              })
+            }
+            InputLabelProps={{ shrink: true }}
+          />
         )}
-      </Grid>
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

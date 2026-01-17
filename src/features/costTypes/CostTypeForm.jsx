@@ -1,4 +1,10 @@
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useState } from "react";
 
 export default function CostTypeForm({
@@ -43,17 +49,15 @@ export default function CostTypeForm({
         {isEdit ? "Editar tipo de costo fijo" : "Nuevo tipo de costo fijo"}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            label="Nombre"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-          />
-        </Grid>
-      </Grid>
+      <Stack spacing={2}>
+        <TextField
+          fullWidth
+          label="Nombre"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+        />
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>

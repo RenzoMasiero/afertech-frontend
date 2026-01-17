@@ -1,11 +1,13 @@
 import {
   Box,
   Button,
-  Grid,
   TextField,
   Typography,
   Select,
   MenuItem,
+  Stack,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -63,109 +65,97 @@ export default function PurchaseOrderForm({
         {isEdit ? "Editar orden de compra" : "Nueva orden de compra"}
       </Typography>
 
-      <Grid container spacing={2}>
+      {/* Layout vertical real */}
+      <Stack spacing={2}>
         {/* Cliente */}
-        <Grid item xs={12} md={6}>
+        <FormControl fullWidth>
+          <InputLabel id="client-label">Cliente</InputLabel>
           <Select
-            fullWidth
+            labelId="client-label"
             name="clientId"
             value={order.clientId}
+            label="Cliente"
             onChange={handleChange}
-            displayEmpty
             disabled={isEdit}
           >
-            <MenuItem value="">
-              <em>Seleccionar cliente</em>
-            </MenuItem>
             {clients.map((c) => (
               <MenuItem key={c.id} value={c.id}>
                 {c.name}
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
         {/* Proyecto */}
-        <Grid item xs={12} md={6}>
+        <FormControl fullWidth>
+          <InputLabel id="project-label">Proyecto</InputLabel>
           <Select
-            fullWidth
+            labelId="project-label"
             name="projectId"
             value={order.projectId}
+            label="Proyecto"
             onChange={handleChange}
-            displayEmpty
             disabled={isEdit}
           >
-            <MenuItem value="">
-              <em>Seleccionar proyecto</em>
-            </MenuItem>
             {projects.map((p) => (
               <MenuItem key={p.id} value={p.id}>
                 {p.name}
               </MenuItem>
             ))}
           </Select>
-        </Grid>
+        </FormControl>
 
         {/* N° Orden de compra */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="purchaseOrderNumber"
-            label="N° Orden de compra"
-            value={order.purchaseOrderNumber ?? ""}
-            onChange={handleChange}
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          name="purchaseOrderNumber"
+          label="N° Orden de compra"
+          value={order.purchaseOrderNumber ?? ""}
+          onChange={handleChange}
+        />
 
         {/* Fecha */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="issueDate"
-            label="Fecha"
-            type="date"
-            value={order.issueDate ?? ""}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          name="issueDate"
+          label="Fecha"
+          type="date"
+          value={order.issueDate ?? ""}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
 
-        {/* Totales */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="totalWithoutTax"
-            label="Total sin IVA"
-            type="number"
-            value={order.totalWithoutTax ?? ""}
-            onChange={handleChange}
-          />
-        </Grid>
+        {/* Total sin IVA */}
+        <TextField
+          fullWidth
+          name="totalWithoutTax"
+          label="Total sin IVA"
+          type="number"
+          value={order.totalWithoutTax ?? ""}
+          onChange={handleChange}
+        />
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="totalWithTax"
-            label="Total con IVA"
-            type="number"
-            value={order.totalWithTax ?? ""}
-            onChange={handleChange}
-          />
-        </Grid>
+        {/* Total con IVA */}
+        <TextField
+          fullWidth
+          name="totalWithTax"
+          label="Total con IVA"
+          type="number"
+          value={order.totalWithTax ?? ""}
+          onChange={handleChange}
+        />
 
         {/* Descripción */}
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            name="description"
-            label="Descripción"
-            value={order.description ?? ""}
-            onChange={handleChange}
-            multiline
-            minRows={3}
-          />
-        </Grid>
-      </Grid>
+        <TextField
+          fullWidth
+          name="description"
+          label="Descripción"
+          value={order.description ?? ""}
+          onChange={handleChange}
+          multiline
+          minRows={3}
+        />
+      </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSubmit}>
