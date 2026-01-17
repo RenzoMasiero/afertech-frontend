@@ -38,16 +38,16 @@ export default function InvoiceSuccess({ invoice, onBack }) {
         <strong>Proyecto:</strong> {invoice.projectName}
       </Typography>
       <Typography>
-        <strong>Orden de compra ID:</strong>{" "}
-        {invoice.purchaseOrderId ?? "-"}
+        <strong>Orden de compra:</strong>{" "}
+        {invoice.purchaseOrderNumber ?? "-"}
       </Typography>
       <Typography>
         <strong>% Orden de compra:</strong>{" "}
         {invoice.purchaseOrderPercentage}
       </Typography>
       <Typography>
-        <strong>Orden de pago ID:</strong>{" "}
-        {invoice.paymentOrderId ?? "-"}
+        <strong>Orden de pago:</strong>{" "}
+        {invoice.paymentOrderNumber ?? "-"}
       </Typography>
 
       <Divider sx={{ my: 2 }} />
