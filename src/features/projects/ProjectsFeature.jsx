@@ -23,19 +23,24 @@ export default function ProjectsFeature({ authUser }) {
   }, []);
 
   const handleSave = async (data) => {
-    const saved = data.id
-      ? await updateProject(data.id, data)
-      : await createProject(data);
+    try {
+      const saved = data.id
+        ? await updateProject(data.id, data)
+        : await createProject(data);
 
-    setProjects((prev) => {
-      const exists = prev.find((p) => p.id === saved.id);
-      return exists
-        ? prev.map((p) => (p.id === saved.id ? saved : p))
-        : [...prev, saved];
-    });
+      setProjects((prev) => {
+        const exists = prev.find((p) => p.id === saved.id);
+        return exists
+          ? prev.map((p) => (p.id === saved.id ? saved : p))
+          : [...prev, saved];
+      });
 
-    setSelectedProject(saved);
-    setMode("success");
+      setSelectedProject(saved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
+    }
   };
 
   const handleDelete = async (id) => {
@@ -47,18 +52,11 @@ export default function ProjectsFeature({ authUser }) {
     try {
       await deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
+      setSelectedProject(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-
-      if (status === 409) {
-        alert(
-          "No se puede eliminar el proyecto porque tiene entidades asociadas."
-        );
-        return;
-      }
-
-      alert("Ocurrió un error al eliminar el proyecto.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 

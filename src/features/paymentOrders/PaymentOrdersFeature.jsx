@@ -56,27 +56,31 @@ export default function PaymentOrdersFeature({ authUser }) {
   };
 
   const handleSave = async (data) => {
-    let response;
+    try {
+      let response;
 
-    if (data.id) {
-      response = await updatePaymentOrder(data.id, data);
-    } else {
-      response = await createPaymentOrder(data);
+      if (data.id) {
+        response = await updatePaymentOrder(data.id, data);
+      } else {
+        response = await createPaymentOrder(data);
+      }
+
+      const mappedSaved = mapPaymentOrderToUI(response);
+
+      setPaymentOrders((prev) => {
+        const exists = prev.find((o) => o.id === mappedSaved.id);
+        return exists
+          ? prev.map((o) => (o.id === mappedSaved.id ? mappedSaved : o))
+          : [...prev, mappedSaved];
+      });
+
+      setSelectedPaymentOrder(mappedSaved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      // 🔒 Se consume para mantener UI y consola limpias
+      return;
     }
-
-    // 🔒 Fuente única de verdad: mapper SIEMPRE
-    const mappedSaved = mapPaymentOrderToUI(response);
-
-    setPaymentOrders((prev) => {
-      const exists = prev.find((o) => o.id === mappedSaved.id);
-      return exists
-        ? prev.map((o) => (o.id === mappedSaved.id ? mappedSaved : o))
-        : [...prev, mappedSaved];
-    });
-
-    // 🔒 Orden explícito: primero data, después modo
-    setSelectedPaymentOrder(mappedSaved);
-    setMode("success");
   };
 
   const handleDelete = async (id) => {
@@ -90,15 +94,9 @@ export default function PaymentOrdersFeature({ authUser }) {
       setPaymentOrders((prev) => prev.filter((o) => o.id !== id));
       setSelectedPaymentOrder(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-      if (status === 409) {
-        alert(
-          "No se puede eliminar la orden de pago porque está asociada a una factura."
-        );
-        return;
-      }
-      alert("Ocurrió un error al eliminar la orden de pago.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente
+      return;
     }
   };
 
@@ -150,7 +148,6 @@ export default function PaymentOrdersFeature({ authUser }) {
   }
 
   if (mode === "success") {
-    // 🔒 NUNCA renderizar Success sin entidad válida
     if (!selectedPaymentOrder) return null;
 
     return (

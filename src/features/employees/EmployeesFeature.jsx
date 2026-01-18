@@ -21,19 +21,24 @@ export default function EmployeesFeature({ authUser }) {
   }, []);
 
   const handleSave = async (data) => {
-    const saved = data.id
-      ? await updateEmployee(data.id, data)
-      : await createEmployee(data);
+    try {
+      const saved = data.id
+        ? await updateEmployee(data.id, data)
+        : await createEmployee(data);
 
-    setEmployees((prev) => {
-      const exists = prev.find((e) => e.id === saved.id);
-      return exists
-        ? prev.map((e) => (e.id === saved.id ? saved : e))
-        : [...prev, saved];
-    });
+      setEmployees((prev) => {
+        const exists = prev.find((e) => e.id === saved.id);
+        return exists
+          ? prev.map((e) => (e.id === saved.id ? saved : e))
+          : [...prev, saved];
+      });
 
-    setSelectedEmployee(saved);
-    setMode("success");
+      setSelectedEmployee(saved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
+    }
   };
 
   const handleDelete = async (id) => {
@@ -45,18 +50,11 @@ export default function EmployeesFeature({ authUser }) {
     try {
       await deleteEmployee(id);
       setEmployees((prev) => prev.filter((e) => e.id !== id));
+      setSelectedEmployee(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-
-      if (status === 409) {
-        alert(
-          "No se puede eliminar el empleado porque está siendo utilizado en costos."
-        );
-        return;
-      }
-
-      alert("Ocurrió un error al eliminar el empleado.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 

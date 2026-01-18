@@ -22,13 +22,34 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // 401 → sesión inválida
     if (error.response && error.response.status === 401) {
-      // Token inválido o vencido
       localStorage.removeItem("authToken");
-
-      // Forzar vuelta al login
       window.location.reload();
+      return Promise.reject(error);
     }
+
+    // 🔴 CANAL ÚNICO DE ERROR AL UI
+    const data = error.response?.data;
+
+    let message = "Ocurrió un error inesperado";
+    let details = [];
+
+    if (typeof data === "string") {
+      message = data;
+    } else if (data && typeof data === "object") {
+      message = data.message || message;
+      details = Array.isArray(data.details) ? data.details : [];
+    }
+
+    window.dispatchEvent(
+      new CustomEvent("global-api-error", {
+        detail: {
+          message,
+          details,
+        },
+      })
+    );
 
     return Promise.reject(error);
   }

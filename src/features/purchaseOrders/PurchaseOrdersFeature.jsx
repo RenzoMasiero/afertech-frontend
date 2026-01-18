@@ -53,27 +53,32 @@ export default function PurchaseOrdersFeature({ authUser }) {
   };
 
   const handleSave = async (data) => {
-    let response;
+    try {
+      let response;
 
-    if (data.id) {
-      response = await updatePurchaseOrder(data.id, data);
-    } else {
-      response = await createPurchaseOrder(data);
+      if (data.id) {
+        response = await updatePurchaseOrder(data.id, data);
+      } else {
+        response = await createPurchaseOrder(data);
+      }
+
+      // 🔒 Fuente única de verdad: mapper SIEMPRE
+      const mappedSaved = mapPurchaseOrderToUI(response);
+
+      setPurchaseOrders((prev) => {
+        const exists = prev.find((o) => o.id === mappedSaved.id);
+        return exists
+          ? prev.map((o) => (o.id === mappedSaved.id ? mappedSaved : o))
+          : [...prev, mappedSaved];
+      });
+
+      // 🔒 Orden explícito: primero data, después modo
+      setSelectedPurchaseOrder(mappedSaved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
-
-    // 🔒 Fuente única de verdad: mapper SIEMPRE
-    const mappedSaved = mapPurchaseOrderToUI(response);
-
-    setPurchaseOrders((prev) => {
-      const exists = prev.find((o) => o.id === mappedSaved.id);
-      return exists
-        ? prev.map((o) => (o.id === mappedSaved.id ? mappedSaved : o))
-        : [...prev, mappedSaved];
-    });
-
-    // 🔒 Orden explícito: primero data, después modo
-    setSelectedPurchaseOrder(mappedSaved);
-    setMode("success");
   };
 
   const handleDelete = async (id) => {
@@ -87,15 +92,9 @@ export default function PurchaseOrdersFeature({ authUser }) {
       setPurchaseOrders((prev) => prev.filter((o) => o.id !== id));
       setSelectedPurchaseOrder(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-      if (status === 409) {
-        alert(
-          "No se puede eliminar la orden de compra porque tiene facturas asociadas."
-        );
-        return;
-      }
-      alert("Ocurrió un error al eliminar la orden de compra.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 
