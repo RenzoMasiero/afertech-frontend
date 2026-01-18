@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Drawer, useMediaQuery, Modal, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Drawer,
+  useMediaQuery,
+  Modal,
+  Typography,
+  Button,
+} from "@mui/material";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
@@ -41,12 +48,20 @@ export default function AppLayout({ selected, onSelect, children }) {
       <Header onMenuClick={isMobile ? handleOpenDrawer : undefined} />
 
       <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        {/* ===== SIDEBAR DESKTOP ===== */}
         {!isMobile && (
-          <Box sx={{ height: "100%", overflowY: "auto" }}>
+          <Box
+            sx={{
+              height: "100%",
+              overflowY: "auto",
+              backgroundColor: "#e0e0e0", // 👈 FONDO MOVIDO AL CONTENEDOR QUE SCROLLEA
+            }}
+          >
             <Sidebar selected={selected} onSelect={onSelect} />
           </Box>
         )}
 
+        {/* ===== SIDEBAR MOBILE ===== */}
         {isMobile && (
           <Drawer
             open={drawerOpen}
@@ -54,7 +69,11 @@ export default function AppLayout({ selected, onSelect, children }) {
             ModalProps={{ keepMounted: true }}
           >
             <Box
-              sx={{ height: "100%", overflowY: "auto" }}
+              sx={{
+                height: "100%",
+                overflowY: "auto",
+                backgroundColor: "#e0e0e0", // mismo criterio en mobile
+              }}
               onClick={handleCloseDrawer}
             >
               <Sidebar selected={selected} onSelect={onSelect} />
@@ -62,7 +81,7 @@ export default function AppLayout({ selected, onSelect, children }) {
           </Drawer>
         )}
 
-        {/* Contenido central */}
+        {/* ===== CONTENIDO CENTRAL ===== */}
         <Box
           sx={{
             flex: 1,
