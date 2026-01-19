@@ -1,5 +1,3 @@
-// src/mappers/paymentOrder.mapper.js
-
 /**
  * Convierte una orden de pago del backend
  * al modelo de UI (reflejo exacto del response)
@@ -25,9 +23,13 @@ export function mapPaymentOrderToUI(order) {
 
     totalWithoutTax: order.totalWithoutTax,
     totalWithTax: order.totalWithTax,
+    withholdings: order.withholdings,
 
     concept: order.concept,
-    withholdings: order.withholdings,
+
+    // 🔹 CAMPOS NUEVOS — OBLIGATORIOS
+    executed: order.executed,
+    executionDate: order.executionDate,
 
     loadedAt: order.loadedAt,
     loadedBy: order.loadedBy,

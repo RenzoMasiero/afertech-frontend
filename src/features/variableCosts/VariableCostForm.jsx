@@ -134,7 +134,7 @@ export default function VariableCostForm({
           fullWidth
           name="allocationMonth"
           label="Mes de imputación"
-          type="date"
+          type="month"
           value={cost.allocationMonth}
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
