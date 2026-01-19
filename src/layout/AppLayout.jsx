@@ -44,7 +44,14 @@ export default function AppLayout({ selected, onSelect, children }) {
   };
 
   return (
-    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
       <Header onMenuClick={isMobile ? handleOpenDrawer : undefined} />
 
       <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
@@ -54,7 +61,7 @@ export default function AppLayout({ selected, onSelect, children }) {
             sx={{
               height: "100%",
               overflowY: "auto",
-              backgroundColor: "#e0e0e0", // 👈 FONDO MOVIDO AL CONTENEDOR QUE SCROLLEA
+              backgroundColor: "#e0e0e0",
             }}
           >
             <Sidebar selected={selected} onSelect={onSelect} />
@@ -72,7 +79,7 @@ export default function AppLayout({ selected, onSelect, children }) {
               sx={{
                 height: "100%",
                 overflowY: "auto",
-                backgroundColor: "#e0e0e0", // mismo criterio en mobile
+                backgroundColor: "#e0e0e0",
               }}
               onClick={handleCloseDrawer}
             >
@@ -81,7 +88,7 @@ export default function AppLayout({ selected, onSelect, children }) {
           </Drawer>
         )}
 
-        {/* ===== CONTENIDO CENTRAL ===== */}
+        {/* ===== CONTENIDO CENTRAL (ÚNICO SCROLL) ===== */}
         <Box
           sx={{
             flex: 1,

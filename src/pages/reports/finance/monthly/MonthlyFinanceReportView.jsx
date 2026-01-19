@@ -23,7 +23,7 @@ export default function MonthlyFinanceReportView({ report }) {
     <Box>
       {/* ===== BALANCE DEL MES ===== */}
       <Box sx={{ mb: 3, textAlign: "center" }}>
-        <Typography variant="h6" mb={1}>
+        <Typography variant="h5" fontWeight="bold" mb={1}>
           Balance del mes
         </Typography>
 
@@ -49,9 +49,10 @@ export default function MonthlyFinanceReportView({ report }) {
       <Box sx={{ display: "flex", gap: 4, alignItems: "flex-start" }}>
         {/* ===== GASTOS ===== */}
         <Box sx={{ flex: 1 }}>
-          {/* Header + totales CENTRADOS */}
           <Box sx={{ textAlign: "center", mb: 2 }}>
-            <Typography variant="h6">Gastos del mes</Typography>
+            <Typography variant="h5" fontWeight="bold">
+              Gastos del mes
+            </Typography>
 
             <Typography>
               <strong>Costos fijos:</strong>{" "}
@@ -81,10 +82,12 @@ export default function MonthlyFinanceReportView({ report }) {
             }}
           >
             <Typography>Tipo</Typography>
-            <Typography>Imputación</Typography>
+            <Typography>Fecha</Typography>
             <Typography>Descripción</Typography>
             <Typography align="right">Monto</Typography>
           </Box>
+
+          <Divider sx={{ mb: 1 }} />
 
           {/* Costos fijos */}
           {fixedCosts.map((cost) => (
@@ -129,9 +132,10 @@ export default function MonthlyFinanceReportView({ report }) {
 
         {/* ===== INGRESOS ===== */}
         <Box sx={{ flex: 1 }}>
-          {/* Header + totales CENTRADOS */}
           <Box sx={{ textAlign: "center", mb: 2 }}>
-            <Typography variant="h6">Ingresos del mes</Typography>
+            <Typography variant="h5" fontWeight="bold">
+              Ingresos del mes
+            </Typography>
 
             <Typography>
               <strong>Sin IVA:</strong>{" "}
@@ -165,6 +169,8 @@ export default function MonthlyFinanceReportView({ report }) {
             <Typography>Fecha</Typography>
             <Typography align="right">Monto</Typography>
           </Box>
+
+          <Divider sx={{ mb: 1 }} />
 
           {/* Ingresos */}
           {incomes.map((income) => (
