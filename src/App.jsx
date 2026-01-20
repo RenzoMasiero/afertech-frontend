@@ -15,6 +15,8 @@ import SuppliersFeature from "./features/suppliers/SuppliersFeature";
 import FixedCostsFeature from "./features/fixedCosts/FixedCostsFeature";
 import EmployeesFeature from "./features/employees/EmployeesFeature";
 
+import MonthlyFinanceReportPage from "./pages/reports/finance/monthly/MonthlyFinanceReportPage";
+
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     Boolean(localStorage.getItem("authToken"))
@@ -52,16 +54,30 @@ export default function App() {
       )}
 
       {section === "invoices" && <InvoicesFeature authUser={authUser} />}
-      {section === "paymentOrders" && <PaymentOrdersFeature authUser={authUser} />}
-      {section === "purchaseOrders" && <PurchaseOrdersFeature authUser={authUser} />}
+      {section === "paymentOrders" && (
+        <PaymentOrdersFeature authUser={authUser} />
+      )}
+      {section === "purchaseOrders" && (
+        <PurchaseOrdersFeature authUser={authUser} />
+      )}
       {section === "clients" && <ClientsFeature authUser={authUser} />}
       {section === "projects" && <ProjectsFeature authUser={authUser} />}
       {section === "suppliers" && <SuppliersFeature authUser={authUser} />}
       {section === "employees" && <EmployeesFeature authUser={authUser} />}
-      {section === "variableCosts" && <VariableCostsFeature authUser={authUser} />}
-      {section === "fixedCosts" && <FixedCostsFeature authUser={authUser} />}
+      {section === "variableCosts" && (
+        <VariableCostsFeature authUser={authUser} />
+      )}
+      {section === "fixedCosts" && (
+        <FixedCostsFeature authUser={authUser} />
+      )}
       {section === "costTypes" && <CostTypesFeature authUser={authUser} />}
-      {section === "variableCostTypes" && (<VariableCostTypesFeature authUser={authUser} />)}
+      {section === "variableCostTypes" && (
+        <VariableCostTypesFeature authUser={authUser} />
+      )}
+
+      {section === "monthlyFinanceReport" && (
+        <MonthlyFinanceReportPage />
+      )}
     </AppLayout>
   );
 }

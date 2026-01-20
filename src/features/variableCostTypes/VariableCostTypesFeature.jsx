@@ -44,27 +44,32 @@ export default function VariableCostTypesFeature({ authUser }) {
   };
 
   const handleSave = async (data) => {
-    let response;
+    try {
+      let response;
 
-    if (data.id) {
-      response = await updateVariableCostType(data.id, data);
-    } else {
-      response = await createVariableCostType(data);
+      if (data.id) {
+        response = await updateVariableCostType(data.id, data);
+      } else {
+        response = await createVariableCostType(data);
+      }
+
+      // 🔒 Fuente única de verdad: mapper SIEMPRE
+      const mappedSaved = mapVariableCostTypeToUI(response);
+
+      setTypes((prev) => {
+        const exists = prev.find((t) => t.id === mappedSaved.id);
+        return exists
+          ? prev.map((t) => (t.id === mappedSaved.id ? mappedSaved : t))
+          : [...prev, mappedSaved];
+      });
+
+      // 🔒 Orden explícito: primero data, después modo
+      setSelectedType(mappedSaved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
-
-    // 🔒 Fuente única de verdad: mapper SIEMPRE
-    const mappedSaved = mapVariableCostTypeToUI(response);
-
-    setTypes((prev) => {
-      const exists = prev.find((t) => t.id === mappedSaved.id);
-      return exists
-        ? prev.map((t) => (t.id === mappedSaved.id ? mappedSaved : t))
-        : [...prev, mappedSaved];
-    });
-
-    // 🔒 Orden explícito: primero data, después modo
-    setSelectedType(mappedSaved);
-    setMode("success");
   };
 
   const handleDelete = async (id) => {
@@ -78,15 +83,9 @@ export default function VariableCostTypesFeature({ authUser }) {
       setTypes((prev) => prev.filter((t) => t.id !== id));
       setSelectedType(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-      if (status === 409) {
-        alert(
-          "No se puede eliminar el tipo de costo variable porque está siendo utilizado."
-        );
-        return;
-      }
-      alert("Ocurrió un error al eliminar el tipo de costo variable.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 

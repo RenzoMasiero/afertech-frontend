@@ -28,19 +28,24 @@ export default function FixedCostsFeature({ authUser }) {
   }, []);
 
   const handleSave = async (data) => {
-    const saved = data.id
-      ? await updateFixedCost(data.id, data)
-      : await createFixedCost(data);
+    try {
+      const saved = data.id
+        ? await updateFixedCost(data.id, data)
+        : await createFixedCost(data);
 
-    setFixedCosts((prev) => {
-      const exists = prev.find((c) => c.id === saved.id);
-      return exists
-        ? prev.map((c) => (c.id === saved.id ? saved : c))
-        : [...prev, saved];
-    });
+      setFixedCosts((prev) => {
+        const exists = prev.find((c) => c.id === saved.id);
+        return exists
+          ? prev.map((c) => (c.id === saved.id ? saved : c))
+          : [...prev, saved];
+      });
 
-    setSelectedFixedCost(saved);
-    setMode("success");
+      setSelectedFixedCost(saved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
+    }
   };
 
   const handleDelete = async (id) => {
@@ -52,18 +57,11 @@ export default function FixedCostsFeature({ authUser }) {
     try {
       await deleteFixedCost(id);
       setFixedCosts((prev) => prev.filter((c) => c.id !== id));
+      setSelectedFixedCost(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-
-      if (status === 409) {
-        alert(
-          "No se puede eliminar el costo fijo porque está siendo utilizado."
-        );
-        return;
-      }
-
-      alert("Ocurrió un error al eliminar el costo fijo.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 

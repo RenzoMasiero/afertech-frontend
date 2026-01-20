@@ -31,19 +31,24 @@ export default function InvoicesFeature({ authUser }) {
   }, []);
 
   const handleSave = async (data) => {
-    const saved = data.id
-      ? await updateInvoice(data.id, data)
-      : await createInvoice(data);
+    try {
+      const saved = data.id
+        ? await updateInvoice(data.id, data)
+        : await createInvoice(data);
 
-    setInvoices((prev) => {
-      const exists = prev.find((i) => i.id === saved.id);
-      return exists
-        ? prev.map((i) => (i.id === saved.id ? saved : i))
-        : [...prev, saved];
-    });
+      setInvoices((prev) => {
+        const exists = prev.find((i) => i.id === saved.id);
+        return exists
+          ? prev.map((i) => (i.id === saved.id ? saved : i))
+          : [...prev, saved];
+      });
 
-    setSelectedInvoice(saved);
-    setMode("success");
+      setSelectedInvoice(saved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
+    }
   };
 
   const handleDelete = async (id) => {
@@ -55,18 +60,11 @@ export default function InvoicesFeature({ authUser }) {
     try {
       await deleteInvoice(id);
       setInvoices((prev) => prev.filter((i) => i.id !== id));
+      setSelectedInvoice(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-
-      if (status === 409) {
-        alert(
-          "No se puede eliminar la factura porque tiene una orden de pago asociada."
-        );
-        return;
-      }
-
-      alert("Ocurrió un error al eliminar la factura.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 

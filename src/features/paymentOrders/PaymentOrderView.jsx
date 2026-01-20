@@ -46,8 +46,19 @@ export default function PaymentOrderView({
       </Typography>
 
       <Typography>
-        <strong>Fecha:</strong> {order.issueDate}
+        <strong>Fecha de emisión:</strong> {order.issueDate}
       </Typography>
+
+      {/* Estado de ejecución */}
+      <Typography>
+        <strong>Ejecutada:</strong> {order.executed ? "Sí" : "No"}
+      </Typography>
+
+      {order.executed && (
+        <Typography>
+          <strong>Fecha de ejecución:</strong> {order.executionDate}
+        </Typography>
+      )}
 
       <Divider sx={{ my: 2 }} />
 

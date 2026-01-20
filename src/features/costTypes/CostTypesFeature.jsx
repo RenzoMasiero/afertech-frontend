@@ -45,26 +45,30 @@ export default function CostTypesFeature({ authUser }) {
   };
 
   const handleSave = async (data) => {
-    let response;
+    try {
+      let response;
 
-    if (data.id) {
-      response = await updateCostType(data.id, data);
-    } else {
-      response = await createCostType(data);
+      if (data.id) {
+        response = await updateCostType(data.id, data);
+      } else {
+        response = await createCostType(data);
+      }
+
+      const mappedSaved = mapCostTypeToUI(response);
+
+      setCostTypes((prev) => {
+        const exists = prev.find((c) => c.id === mappedSaved.id);
+        return exists
+          ? prev.map((c) => (c.id === mappedSaved.id ? mappedSaved : c))
+          : [...prev, mappedSaved];
+      });
+
+      setSelectedCostType(mappedSaved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
-
-    // 🔒 Fuente única de verdad: mapper
-    const mappedSaved = mapCostTypeToUI(response);
-
-    setCostTypes((prev) => {
-      const exists = prev.find((c) => c.id === mappedSaved.id);
-      return exists
-        ? prev.map((c) => (c.id === mappedSaved.id ? mappedSaved : c))
-        : [...prev, mappedSaved];
-    });
-
-    setSelectedCostType(mappedSaved);
-    setMode("success");
   };
 
   const handleDelete = async (id) => {
@@ -78,15 +82,9 @@ export default function CostTypesFeature({ authUser }) {
       setCostTypes((prev) => prev.filter((c) => c.id !== id));
       setSelectedCostType(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-      if (status === 409) {
-        alert(
-          "No se puede eliminar el tipo de costo porque está siendo utilizado."
-        );
-        return;
-      }
-      alert("Ocurrió un error al eliminar el tipo de costo.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 

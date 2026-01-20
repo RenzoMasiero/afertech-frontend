@@ -133,6 +133,16 @@ export default function Sidebar({ selected, onSelect }) {
         >
           <ListItemText primary="Tipos de costo variable" />
         </ListItemButton>
+
+        {/* Reportes */}
+        <SectionTitle>Reportes</SectionTitle>
+
+        <ListItemButton
+          selected={selected === "monthlyFinanceReport"}
+          onClick={() => onSelect("monthlyFinanceReport")}
+        >
+          <ListItemText primary="Mes" />
+        </ListItemButton>
       </List>
     </Box>
   );

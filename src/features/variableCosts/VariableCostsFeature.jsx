@@ -56,27 +56,32 @@ export default function VariableCostsFeature({ authUser }) {
   };
 
   const handleSave = async (data) => {
-    let response;
+    try {
+      let response;
 
-    if (data.id) {
-      response = await updateVariableCost(data.id, data);
-    } else {
-      response = await createVariableCost(data);
+      if (data.id) {
+        response = await updateVariableCost(data.id, data);
+      } else {
+        response = await createVariableCost(data);
+      }
+
+      // 🔒 Fuente única de verdad: mapper SIEMPRE
+      const mappedSaved = mapVariableCostToUI(response);
+
+      setVariableCosts((prev) => {
+        const exists = prev.find((c) => c.id === mappedSaved.id);
+        return exists
+          ? prev.map((c) => (c.id === mappedSaved.id ? mappedSaved : c))
+          : [...prev, mappedSaved];
+      });
+
+      // 🔒 Orden explícito: primero data, después modo
+      setSelectedCost(mappedSaved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
-
-    // 🔒 Fuente única de verdad: mapper SIEMPRE
-    const mappedSaved = mapVariableCostToUI(response);
-
-    setVariableCosts((prev) => {
-      const exists = prev.find((c) => c.id === mappedSaved.id);
-      return exists
-        ? prev.map((c) => (c.id === mappedSaved.id ? mappedSaved : c))
-        : [...prev, mappedSaved];
-    });
-
-    // 🔒 Orden explícito: primero data, después modo
-    setSelectedCost(mappedSaved);
-    setMode("success");
   };
 
   const handleDelete = async (id) => {
@@ -90,8 +95,9 @@ export default function VariableCostsFeature({ authUser }) {
       setVariableCosts((prev) => prev.filter((c) => c.id !== id));
       setSelectedCost(null);
       setMode("list");
-    } catch (error) {
-      alert("Ocurrió un error al eliminar el costo variable.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 

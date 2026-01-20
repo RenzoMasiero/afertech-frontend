@@ -33,6 +33,12 @@ export default function PaymentOrdersTable({ rows, onAdd, onView }) {
       ...(isMobile ? { minWidth: 160 } : { flex: 1.5 }),
     },
     {
+      field: "executed",
+      headerName: "Ejecutada",
+      ...(isMobile ? { minWidth: 120 } : { flex: 0.8 }),
+      renderCell: (p) => (p.row.executed ? "Sí" : "No"),
+    },
+    {
       field: "totalWithTax",
       headerName: "Total",
       ...(isMobile ? { minWidth: 140 } : { flex: 1 }),

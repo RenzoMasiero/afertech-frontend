@@ -21,19 +21,24 @@ export default function ClientsFeature({ authUser }) {
   }, []);
 
   const handleSave = async (data) => {
-    const saved = data.id
-      ? await updateClient(data.id, data)
-      : await createClient(data);
+    try {
+      const saved = data.id
+        ? await updateClient(data.id, data)
+        : await createClient(data);
 
-    setClients((prev) => {
-      const exists = prev.find((c) => c.id === saved.id);
-      return exists
-        ? prev.map((c) => (c.id === saved.id ? saved : c))
-        : [...prev, saved];
-    });
+      setClients((prev) => {
+        const exists = prev.find((c) => c.id === saved.id);
+        return exists
+          ? prev.map((c) => (c.id === saved.id ? saved : c))
+          : [...prev, saved];
+      });
 
-    setSelectedClient(saved);
-    setMode("success");
+      setSelectedClient(saved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
+    }
   };
 
   const handleDelete = async (id) => {
@@ -45,18 +50,11 @@ export default function ClientsFeature({ authUser }) {
     try {
       await deleteClient(id);
       setClients((prev) => prev.filter((c) => c.id !== id));
+      setSelectedClient(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-
-      if (status === 409) {
-        alert(
-          "No se puede eliminar el cliente porque tiene facturas asociadas."
-        );
-        return;
-      }
-
-      alert("Ocurrió un error al eliminar el cliente.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 

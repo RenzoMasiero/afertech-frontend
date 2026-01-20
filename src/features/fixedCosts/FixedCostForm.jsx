@@ -113,7 +113,7 @@ export default function FixedCostForm({
           fullWidth
           name="allocationMonth"
           label="Mes imputado"
-          type="date"
+          type="month"
           value={fixedCost.allocationMonth}
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}

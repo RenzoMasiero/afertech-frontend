@@ -44,27 +44,32 @@ export default function SuppliersFeature({ authUser }) {
   };
 
   const handleSave = async (data) => {
-    let response;
+    try {
+      let response;
 
-    if (data.id) {
-      response = await updateSupplier(data.id, data);
-    } else {
-      response = await createSupplier(data);
+      if (data.id) {
+        response = await updateSupplier(data.id, data);
+      } else {
+        response = await createSupplier(data);
+      }
+
+      // 🔒 Fuente única de verdad: mapper SIEMPRE
+      const mappedSaved = mapSupplierToUI(response);
+
+      setSuppliers((prev) => {
+        const exists = prev.find((s) => s.id === mappedSaved.id);
+        return exists
+          ? prev.map((s) => (s.id === mappedSaved.id ? mappedSaved : s))
+          : [...prev, mappedSaved];
+      });
+
+      // 🔒 Orden explícito: primero data, después modo
+      setSelectedSupplier(mappedSaved);
+      setMode("success");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
-
-    // 🔒 Fuente única de verdad: mapper SIEMPRE
-    const mappedSaved = mapSupplierToUI(response);
-
-    setSuppliers((prev) => {
-      const exists = prev.find((s) => s.id === mappedSaved.id);
-      return exists
-        ? prev.map((s) => (s.id === mappedSaved.id ? mappedSaved : s))
-        : [...prev, mappedSaved];
-    });
-
-    // 🔒 Orden explícito: primero data, después modo
-    setSelectedSupplier(mappedSaved);
-    setMode("success");
   };
 
   const handleDelete = async (id) => {
@@ -78,15 +83,9 @@ export default function SuppliersFeature({ authUser }) {
       setSuppliers((prev) => prev.filter((s) => s.id !== id));
       setSelectedSupplier(null);
       setMode("list");
-    } catch (error) {
-      const status = error?.response?.status;
-      if (status === 409) {
-        alert(
-          "No se puede eliminar el proveedor porque está siendo utilizado."
-        );
-        return;
-      }
-      alert("Ocurrió un error al eliminar el proveedor.");
+    } catch {
+      // 🔒 Error ya canalizado globalmente (popup)
+      return;
     }
   };
 
