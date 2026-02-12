@@ -10,7 +10,13 @@ import {
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
-export default function AppLayout({ selected, onSelect, children }) {
+export default function AppLayout({
+  selected,
+  onSelect,
+  children,
+  authUser,
+  onLogout,
+}) {
   const isMobile = useMediaQuery("(max-width:900px)");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -52,7 +58,11 @@ export default function AppLayout({ selected, onSelect, children }) {
         overflow: "hidden",
       }}
     >
-      <Header onMenuClick={isMobile ? handleOpenDrawer : undefined} />
+      <Header
+        onMenuClick={isMobile ? handleOpenDrawer : undefined}
+        authUser={authUser}
+        onLogout={onLogout}
+      />
 
       <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {/* ===== SIDEBAR DESKTOP ===== */}

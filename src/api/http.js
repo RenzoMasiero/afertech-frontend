@@ -22,10 +22,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // 401 → sesión inválida
     if (error.response && error.response.status === 401) {
+      // Limpieza defensiva
       localStorage.removeItem("authToken");
-      window.location.reload();
+      localStorage.removeItem("authUser");
+
+      // Emitir evento de sesión expirada
+      window.dispatchEvent(new Event("session-expired"));
+
       return Promise.reject(error);
     }
 

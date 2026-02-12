@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppLayout from "./layout/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import { Box, Typography } from "@mui/material";
@@ -34,12 +34,37 @@ export default function App() {
     setAuthUser(user);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("authUser");
+    setIsAuthenticated(false);
+    setAuthUser(null);
+  };
+
+  /* ===== SESSION EXPIRED LISTENER ===== */
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      handleLogout();
+    };
+
+    window.addEventListener("session-expired", handleSessionExpired);
+
+    return () => {
+      window.removeEventListener("session-expired", handleSessionExpired);
+    };
+  }, []);
+
   if (!isAuthenticated) {
     return <LoginPage onLoginSuccess={handleLoginSuccess} />;
   }
 
   return (
-    <AppLayout selected={section} onSelect={setSection} authUser={authUser}>
+    <AppLayout
+      selected={section}
+      onSelect={setSection}
+      authUser={authUser}
+      onLogout={handleLogout}
+    >
       {section === "home" && (
         <Box
           sx={{
