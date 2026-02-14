@@ -39,6 +39,8 @@ export default function PurchaseOrderForm({
     if (isEdit) {
       onSubmit({
         id: order.id,
+        clientId: Number(order.clientId),
+        projectId: Number(order.projectId),
         purchaseOrderNumber: order.purchaseOrderNumber,
         issueDate: order.issueDate,
         totalWithoutTax: Number(order.totalWithoutTax),
@@ -65,7 +67,6 @@ export default function PurchaseOrderForm({
         {isEdit ? "Editar orden de compra" : "Nueva orden de compra"}
       </Typography>
 
-      {/* Layout vertical real */}
       <Stack spacing={2}>
         {/* Cliente */}
         <FormControl fullWidth>
