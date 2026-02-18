@@ -40,6 +40,16 @@ export default function InvoiceForm({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    // 🔥 Si cambia proyecto → limpiar PO seleccionada
+    if (name === "projectId") {
+      setInvoice({
+        ...invoice,
+        projectId: value,
+        purchaseOrderId: "",
+      });
+      return;
+    }
+
     if (name === "purchaseOrderPercentage") {
       const numeric =
         value === "" ? "" : Math.min(100, Math.max(0, Number(value)));
@@ -71,13 +81,21 @@ export default function InvoiceForm({
     return clients.filter((c) => c.name.toLowerCase().includes(q));
   }, [clients, clientFilter]);
 
+  // 🔥 FILTRO REAL POR PROYECTO
+  const filteredPurchaseOrders = useMemo(() => {
+    if (!invoice.projectId) return [];
+
+    return purchaseOrders.filter(
+      (po) => Number(po.projectId) === Number(invoice.projectId)
+    );
+  }, [purchaseOrders, invoice.projectId]);
+
   return (
     <Box>
       <Typography variant="h5" mb={2}>
         {invoice.id ? "Editar factura" : "Nueva factura"}
       </Typography>
 
-      {/* LAYOUT VERTICAL REAL */}
       <Stack spacing={2}>
         {/* Cliente */}
         <FormControl fullWidth>
@@ -135,8 +153,9 @@ export default function InvoiceForm({
             value={invoice.purchaseOrderId}
             label="Orden de compra"
             onChange={handleChange}
+            disabled={!invoice.projectId}
           >
-            {purchaseOrders.map((po) => (
+            {filteredPurchaseOrders.map((po) => (
               <MenuItem key={po.id} value={po.id}>
                 {po.purchaseOrderNumber}
               </MenuItem>
@@ -152,7 +171,6 @@ export default function InvoiceForm({
           InputProps={{ readOnly: true }}
         />
 
-        {/* Campos estándar */}
         {[
           ["invoiceNumber", "N° Factura"],
           ["issueDate", "Fecha de factura", "date"],

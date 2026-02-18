@@ -12,7 +12,7 @@ import {
 } from "../../api/invoices.api";
 import { getClients } from "../../api/clients.api";
 import { getProjects } from "../../api/projects.api";
-import { getPurchaseOrders } from "../../api/purchaseOrders.api";
+import { getAllPurchaseOrders } from "../../api/purchaseOrders.api";
 
 export default function InvoicesFeature({ authUser }) {
   const [mode, setMode] = useState("list");
@@ -27,7 +27,7 @@ export default function InvoicesFeature({ authUser }) {
     getInvoices().then((r) => setInvoices(r.items));
     getClients().then((r) => setClients(r.items));
     getProjects().then((r) => setProjects(r.items));
-    getPurchaseOrders().then((r) => setPurchaseOrders(r.items));
+    getAllPurchaseOrders().then((r) => setPurchaseOrders(r.items));
   }, []);
 
   const handleSave = async (data) => {
@@ -46,7 +46,6 @@ export default function InvoicesFeature({ authUser }) {
       setSelectedInvoice(saved);
       setMode("success");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -63,7 +62,6 @@ export default function InvoicesFeature({ authUser }) {
       setSelectedInvoice(null);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };

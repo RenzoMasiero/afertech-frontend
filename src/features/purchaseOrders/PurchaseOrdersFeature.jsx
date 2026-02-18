@@ -27,12 +27,20 @@ export default function PurchaseOrdersFeature({ authUser }) {
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
 
-  useEffect(() => {
-    getPurchaseOrders().then((r) => {
-      const mapped = mapPurchaseOrdersPageToUI(r);
-      setPurchaseOrders(mapped.items);
-    });
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getPurchaseOrders(pageNumber, 20);
+    const mapped = mapPurchaseOrdersPageToUI(r);
+
+    setPurchaseOrders(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
+  useEffect(() => {
+    loadPage(0);
     getClients().then((r) => setClients(r.items));
     getProjects().then((r) => setProjects(r.items));
   }, []);
@@ -54,29 +62,15 @@ export default function PurchaseOrdersFeature({ authUser }) {
 
   const handleSave = async (data) => {
     try {
-      let response;
-
       if (data.id) {
-        response = await updatePurchaseOrder(data.id, data);
+        await updatePurchaseOrder(data.id, data);
       } else {
-        response = await createPurchaseOrder(data);
+        await createPurchaseOrder(data);
       }
 
-      // 🔒 Fuente única de verdad: mapper SIEMPRE
-      const mappedSaved = mapPurchaseOrderToUI(response);
-
-      setPurchaseOrders((prev) => {
-        const exists = prev.find((o) => o.id === mappedSaved.id);
-        return exists
-          ? prev.map((o) => (o.id === mappedSaved.id ? mappedSaved : o))
-          : [...prev, mappedSaved];
-      });
-
-      // 🔒 Orden explícito: primero data, después modo
-      setSelectedPurchaseOrder(mappedSaved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -89,11 +83,9 @@ export default function PurchaseOrdersFeature({ authUser }) {
 
     try {
       await deletePurchaseOrder(id);
-      setPurchaseOrders((prev) => prev.filter((o) => o.id !== id));
-      setSelectedPurchaseOrder(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -102,6 +94,9 @@ export default function PurchaseOrdersFeature({ authUser }) {
     return (
       <PurchaseOrdersTable
         rows={purchaseOrders}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={handleAdd}
         onView={handleView}
       />
@@ -144,7 +139,6 @@ export default function PurchaseOrdersFeature({ authUser }) {
   }
 
   if (mode === "success") {
-    // 🔒 NUNCA renderizar Success sin entidad válida
     if (!selectedPurchaseOrder) return null;
 
     return (
