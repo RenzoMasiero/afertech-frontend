@@ -3,10 +3,13 @@ import { api } from "./http";
 
 /**
  * GET /payment-orders
- * Lista paginada de órdenes de pago
+ * Lista paginada real
  */
-export async function getPaymentOrders() {
-  const response = await api.get("/payment-orders");
+export async function getPaymentOrders(page = 0, size = 20) {
+  const response = await api.get("/payment-orders", {
+    params: { page, size },
+  });
+
   return response.data;
 }
 

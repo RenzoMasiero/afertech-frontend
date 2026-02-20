@@ -13,7 +13,6 @@ import {
 
 import {
   mapVariableCostsPageToUI,
-  mapVariableCostToUI,
 } from "../../mappers/variableCost.mapper";
 
 import { getVariableCostTypes } from "../../api/variableCostTypes.api";
@@ -29,15 +28,25 @@ export default function VariableCostsFeature({ authUser }) {
   const [suppliers, setSuppliers] = useState([]);
   const [projects, setProjects] = useState([]);
 
-  useEffect(() => {
-    getVariableCosts().then((r) => {
-      const mapped = mapVariableCostsPageToUI(r);
-      setVariableCosts(mapped.items);
-    });
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
-    getVariableCostTypes().then((r) => setCostTypes(r.items));
-    getSuppliers().then((r) => setSuppliers(r.items));
-    getProjects().then((r) => setProjects(r.items));
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getVariableCosts(pageNumber, 20);
+    const mapped = mapVariableCostsPageToUI(r);
+
+    setVariableCosts(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
+  useEffect(() => {
+    loadPage(0);
+
+    // catálogos (no paginados para selects)
+    getVariableCostTypes(0, 1000).then((r) => setCostTypes(r.items));
+    getSuppliers(0, 1000).then((r) => setSuppliers(r.items));
+    getProjects(0, 1000).then((r) => setProjects(r.items));
   }, []);
 
   const handleAdd = () => {
@@ -57,29 +66,15 @@ export default function VariableCostsFeature({ authUser }) {
 
   const handleSave = async (data) => {
     try {
-      let response;
-
       if (data.id) {
-        response = await updateVariableCost(data.id, data);
+        await updateVariableCost(data.id, data);
       } else {
-        response = await createVariableCost(data);
+        await createVariableCost(data);
       }
 
-      // 🔒 Fuente única de verdad: mapper SIEMPRE
-      const mappedSaved = mapVariableCostToUI(response);
-
-      setVariableCosts((prev) => {
-        const exists = prev.find((c) => c.id === mappedSaved.id);
-        return exists
-          ? prev.map((c) => (c.id === mappedSaved.id ? mappedSaved : c))
-          : [...prev, mappedSaved];
-      });
-
-      // 🔒 Orden explícito: primero data, después modo
-      setSelectedCost(mappedSaved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -92,11 +87,9 @@ export default function VariableCostsFeature({ authUser }) {
 
     try {
       await deleteVariableCost(id);
-      setVariableCosts((prev) => prev.filter((c) => c.id !== id));
-      setSelectedCost(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -105,6 +98,9 @@ export default function VariableCostsFeature({ authUser }) {
     return (
       <VariableCostsTable
         rows={variableCosts}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={handleAdd}
         onView={handleView}
       />
@@ -148,10 +144,7 @@ export default function VariableCostsFeature({ authUser }) {
     );
   }
 
-  if (mode === "success") {
-    // 🔒 NUNCA renderizar Success sin entidad válida
-    if (!selectedCost) return null;
-
+  if (mode === "success" && selectedCost) {
     return (
       <VariableCostSuccess
         cost={selectedCost}

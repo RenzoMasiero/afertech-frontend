@@ -13,7 +13,6 @@ import {
 
 import {
   mapSuppliersPageToUI,
-  mapSupplierToUI,
 } from "../../mappers/supplier.mapper";
 
 export default function SuppliersFeature({ authUser }) {
@@ -21,11 +20,20 @@ export default function SuppliersFeature({ authUser }) {
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getSuppliers(pageNumber, 20);
+    const mapped = mapSuppliersPageToUI(r);
+
+    setSuppliers(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
   useEffect(() => {
-    getSuppliers().then((r) => {
-      const mapped = mapSuppliersPageToUI(r);
-      setSuppliers(mapped.items);
-    });
+    loadPage(0);
   }, []);
 
   const handleAdd = () => {
@@ -45,29 +53,15 @@ export default function SuppliersFeature({ authUser }) {
 
   const handleSave = async (data) => {
     try {
-      let response;
-
       if (data.id) {
-        response = await updateSupplier(data.id, data);
+        await updateSupplier(data.id, data);
       } else {
-        response = await createSupplier(data);
+        await createSupplier(data);
       }
 
-      // 🔒 Fuente única de verdad: mapper SIEMPRE
-      const mappedSaved = mapSupplierToUI(response);
-
-      setSuppliers((prev) => {
-        const exists = prev.find((s) => s.id === mappedSaved.id);
-        return exists
-          ? prev.map((s) => (s.id === mappedSaved.id ? mappedSaved : s))
-          : [...prev, mappedSaved];
-      });
-
-      // 🔒 Orden explícito: primero data, después modo
-      setSelectedSupplier(mappedSaved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -80,11 +74,9 @@ export default function SuppliersFeature({ authUser }) {
 
     try {
       await deleteSupplier(id);
-      setSuppliers((prev) => prev.filter((s) => s.id !== id));
-      setSelectedSupplier(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -93,6 +85,9 @@ export default function SuppliersFeature({ authUser }) {
     return (
       <SuppliersTable
         rows={suppliers}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={handleAdd}
         onView={handleView}
       />
@@ -131,7 +126,6 @@ export default function SuppliersFeature({ authUser }) {
   }
 
   if (mode === "success") {
-    // 🔒 NUNCA renderizar Success sin entidad válida
     if (!selectedSupplier) return null;
 
     return (

@@ -11,32 +11,40 @@ import {
   deleteEmployee,
 } from "../../api/employees.api";
 
+import { mapEmployeesPageToUI } from "../../mappers/employee.mapper";
+
 export default function EmployeesFeature({ authUser }) {
   const [mode, setMode] = useState("list");
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getEmployees(pageNumber, 20);
+    const mapped = mapEmployeesPageToUI(r);
+
+    setEmployees(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
   useEffect(() => {
-    getEmployees().then((r) => setEmployees(r.items));
+    loadPage(0);
   }, []);
 
   const handleSave = async (data) => {
     try {
-      const saved = data.id
-        ? await updateEmployee(data.id, data)
-        : await createEmployee(data);
+      if (data.id) {
+        await updateEmployee(data.id, data);
+      } else {
+        await createEmployee(data);
+      }
 
-      setEmployees((prev) => {
-        const exists = prev.find((e) => e.id === saved.id);
-        return exists
-          ? prev.map((e) => (e.id === saved.id ? saved : e))
-          : [...prev, saved];
-      });
-
-      setSelectedEmployee(saved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -49,11 +57,9 @@ export default function EmployeesFeature({ authUser }) {
 
     try {
       await deleteEmployee(id);
-      setEmployees((prev) => prev.filter((e) => e.id !== id));
-      setSelectedEmployee(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -62,6 +68,9 @@ export default function EmployeesFeature({ authUser }) {
     return (
       <EmployeesTable
         rows={employees}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={() => setMode("create")}
         onView={(e) => {
           setSelectedEmployee(e);

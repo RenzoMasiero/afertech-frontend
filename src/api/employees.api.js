@@ -1,9 +1,16 @@
+// src/api/employees.api.js
 import { api } from "./http";
-import { mapEmployeesPageToUI } from "../mappers/employee.mapper";
 
-export async function getEmployees() {
-  const response = await api.get("/employees");
-  return mapEmployeesPageToUI(response.data);
+/**
+ * GET /employees
+ * Lista paginada real
+ */
+export async function getEmployees(page = 0, size = 20) {
+  const response = await api.get("/employees", {
+    params: { page, size },
+  });
+
+  return response.data;
 }
 
 export async function createEmployee(data) {

@@ -1,11 +1,15 @@
+// src/api/suppliers.api.js
 import { api } from "./http";
 
 /**
  * GET /suppliers
- * Lista paginada de proveedores
+ * Lista paginada real
  */
-export async function getSuppliers() {
-  const response = await api.get("/suppliers");
+export async function getSuppliers(page = 0, size = 20) {
+  const response = await api.get("/suppliers", {
+    params: { page, size },
+  });
+
   return response.data;
 }
 

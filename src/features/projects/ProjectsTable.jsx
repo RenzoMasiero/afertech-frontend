@@ -1,7 +1,14 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Typography } from "@mui/material";
 
-export default function ProjectsTable({ rows, onAdd, onView }) {
+export default function ProjectsTable({
+  rows,
+  page,
+  totalItems,
+  onPageChange,
+  onAdd,
+  onView,
+}) {
   const columns = [
     { field: "name", headerName: "Nombre", flex: 1.5 },
     { field: "description", headerName: "Descripción", flex: 2 },
@@ -31,7 +38,15 @@ export default function ProjectsTable({ rows, onAdd, onView }) {
           rows={rows || []}
           columns={columns}
           getRowId={(row) => row.id}
-          pageSizeOptions={[5, 10]}
+          paginationMode="server"
+          rowCount={totalItems}
+          paginationModel={{ page, pageSize: 20 }}
+          onPaginationModelChange={(model) => {
+            if (model.page !== page) {
+              onPageChange(model.page);
+            }
+          }}
+          pageSizeOptions={[20]}
           disableRowSelectionOnClick
         />
       </Box>

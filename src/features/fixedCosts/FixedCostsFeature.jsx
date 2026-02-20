@@ -10,6 +10,9 @@ import {
   updateFixedCost,
   deleteFixedCost,
 } from "../../api/fixedCosts.api";
+
+import { mapFixedCostsPageToUI } from "../../mappers/fixedCost.mapper";
+
 import { getCostTypes } from "../../api/costTypes.api";
 import { getEmployees } from "../../api/employees.api";
 
@@ -21,29 +24,37 @@ export default function FixedCostsFeature({ authUser }) {
   const [costTypes, setCostTypes] = useState([]);
   const [employees, setEmployees] = useState([]);
 
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getFixedCosts(pageNumber, 20);
+    const mapped = mapFixedCostsPageToUI(r);
+
+    setFixedCosts(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
   useEffect(() => {
-    getFixedCosts().then((r) => setFixedCosts(r.items));
-    getCostTypes().then((r) => setCostTypes(r.items));
-    getEmployees().then((r) => setEmployees(r.items));
+    loadPage(0);
+
+    // catálogos (no paginados para selects)
+    getCostTypes(0, 1000).then((r) => setCostTypes(r.items));
+    getEmployees(0, 1000).then((r) => setEmployees(r.items));
   }, []);
 
   const handleSave = async (data) => {
     try {
-      const saved = data.id
-        ? await updateFixedCost(data.id, data)
-        : await createFixedCost(data);
+      if (data.id) {
+        await updateFixedCost(data.id, data);
+      } else {
+        await createFixedCost(data);
+      }
 
-      setFixedCosts((prev) => {
-        const exists = prev.find((c) => c.id === saved.id);
-        return exists
-          ? prev.map((c) => (c.id === saved.id ? saved : c))
-          : [...prev, saved];
-      });
-
-      setSelectedFixedCost(saved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -56,11 +67,9 @@ export default function FixedCostsFeature({ authUser }) {
 
     try {
       await deleteFixedCost(id);
-      setFixedCosts((prev) => prev.filter((c) => c.id !== id));
-      setSelectedFixedCost(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -69,6 +78,9 @@ export default function FixedCostsFeature({ authUser }) {
     return (
       <FixedCostsTable
         rows={fixedCosts}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={() => setMode("create")}
         onView={(c) => {
           setSelectedFixedCost(c);

@@ -1,10 +1,16 @@
 // src/api/invoices.api.js
 import { api } from "./http";
-import { mapInvoicesPageToUI } from "../mappers/invoice.mapper";
 
-export async function getInvoices() {
-  const response = await api.get("/invoices");
-  return mapInvoicesPageToUI(response.data);
+/**
+ * GET /invoices
+ * Lista paginada real
+ */
+export async function getInvoices(page = 0, size = 20) {
+  const response = await api.get("/invoices", {
+    params: { page, size },
+  });
+
+  return response.data;
 }
 
 export async function createInvoice(data) {

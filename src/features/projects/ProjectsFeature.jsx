@@ -16,29 +16,32 @@ export default function ProjectsFeature({ authUser }) {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
 
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getProjects(pageNumber, 20);
+
+    setProjects(r.items);
+    setTotalItems(r.totalItems);
+    setPage(r.page);
+  };
+
   useEffect(() => {
-    getProjects().then((r) => {
-      setProjects(r.items);
-    });
+    loadPage(0);
   }, []);
 
   const handleSave = async (data) => {
     try {
-      const saved = data.id
-        ? await updateProject(data.id, data)
-        : await createProject(data);
+      if (data.id) {
+        await updateProject(data.id, data);
+      } else {
+        await createProject(data);
+      }
 
-      setProjects((prev) => {
-        const exists = prev.find((p) => p.id === saved.id);
-        return exists
-          ? prev.map((p) => (p.id === saved.id ? saved : p))
-          : [...prev, saved];
-      });
-
-      setSelectedProject(saved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -51,11 +54,9 @@ export default function ProjectsFeature({ authUser }) {
 
     try {
       await deleteProject(id);
-      setProjects((prev) => prev.filter((p) => p.id !== id));
-      setSelectedProject(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -64,6 +65,9 @@ export default function ProjectsFeature({ authUser }) {
     return (
       <ProjectsTable
         rows={projects}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={() => setMode("create")}
         onView={(p) => {
           setSelectedProject(p);

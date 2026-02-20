@@ -8,7 +8,14 @@ const formatCurrency = (v) =>
     maximumFractionDigits: 0,
   }).format(typeof v === "number" ? v : 0);
 
-export default function PaymentOrdersTable({ rows, onAdd, onView }) {
+export default function PaymentOrdersTable({
+  rows,
+  page,
+  totalItems,
+  onPageChange,
+  onAdd,
+  onView,
+}) {
   const isMobile = useMediaQuery("(max-width:900px)");
 
   const columns = [
@@ -71,8 +78,16 @@ export default function PaymentOrdersTable({ rows, onAdd, onView }) {
           rows={rows || []}
           columns={columns}
           getRowId={(r) => r.id}
+          paginationMode="server"
+          rowCount={totalItems}
+          paginationModel={{ page, pageSize: 20 }}
+          onPaginationModelChange={(model) => {
+            if (model.page !== page) {
+              onPageChange(model.page);
+            }
+          }}
+          pageSizeOptions={[20]}
           disableRowSelectionOnClick
-          pageSizeOptions={[5, 10]}
         />
       </Box>
     </Box>

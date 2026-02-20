@@ -13,7 +13,6 @@ import {
 
 import {
   mapPaymentOrdersPageToUI,
-  mapPaymentOrderToUI,
 } from "../../mappers/paymentOrder.mapper";
 
 import { getClients } from "../../api/clients.api";
@@ -29,12 +28,20 @@ export default function PaymentOrdersFeature({ authUser }) {
   const [projects, setProjects] = useState([]);
   const [invoices, setInvoices] = useState([]);
 
-  useEffect(() => {
-    getPaymentOrders().then((r) => {
-      const mapped = mapPaymentOrdersPageToUI(r);
-      setPaymentOrders(mapped.items);
-    });
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getPaymentOrders(pageNumber, 20);
+    const mapped = mapPaymentOrdersPageToUI(r);
+
+    setPaymentOrders(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
+  useEffect(() => {
+    loadPage(0);
     getClients().then((r) => setClients(r.items));
     getProjects().then((r) => setProjects(r.items));
     getInvoices().then((r) => setInvoices(r.items));
@@ -57,28 +64,15 @@ export default function PaymentOrdersFeature({ authUser }) {
 
   const handleSave = async (data) => {
     try {
-      let response;
-
       if (data.id) {
-        response = await updatePaymentOrder(data.id, data);
+        await updatePaymentOrder(data.id, data);
       } else {
-        response = await createPaymentOrder(data);
+        await createPaymentOrder(data);
       }
 
-      const mappedSaved = mapPaymentOrderToUI(response);
-
-      setPaymentOrders((prev) => {
-        const exists = prev.find((o) => o.id === mappedSaved.id);
-        return exists
-          ? prev.map((o) => (o.id === mappedSaved.id ? mappedSaved : o))
-          : [...prev, mappedSaved];
-      });
-
-      setSelectedPaymentOrder(mappedSaved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
-      // 🔒 Se consume para mantener UI y consola limpias
       return;
     }
   };
@@ -91,11 +85,9 @@ export default function PaymentOrdersFeature({ authUser }) {
 
     try {
       await deletePaymentOrder(id);
-      setPaymentOrders((prev) => prev.filter((o) => o.id !== id));
-      setSelectedPaymentOrder(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente
       return;
     }
   };
@@ -104,6 +96,9 @@ export default function PaymentOrdersFeature({ authUser }) {
     return (
       <PaymentOrdersTable
         rows={paymentOrders}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={handleAdd}
         onView={handleView}
       />
@@ -147,9 +142,7 @@ export default function PaymentOrdersFeature({ authUser }) {
     );
   }
 
-  if (mode === "success") {
-    if (!selectedPaymentOrder) return null;
-
+  if (mode === "success" && selectedPaymentOrder) {
     return (
       <PaymentOrderSuccess
         order={selectedPaymentOrder}

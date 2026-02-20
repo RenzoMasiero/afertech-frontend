@@ -8,7 +8,14 @@ const formatCurrency = (value) =>
     maximumFractionDigits: 0,
   }).format(typeof value === "number" ? value : 0);
 
-export default function InvoicesTable({ rows, onAdd, onView }) {
+export default function InvoicesTable({
+  rows,
+  page,
+  totalItems,
+  onPageChange,
+  onAdd,
+  onView,
+}) {
   const isMobile = useMediaQuery("(max-width:900px)");
 
   const columns = [
@@ -68,7 +75,15 @@ export default function InvoicesTable({ rows, onAdd, onView }) {
           rows={rows || []}
           columns={columns}
           getRowId={(row) => row.id}
-          pageSizeOptions={[5, 10]}
+          paginationMode="server"
+          rowCount={totalItems}
+          paginationModel={{ page, pageSize: 20 }}
+          onPaginationModelChange={(model) => {
+            if (model.page !== page) {
+              onPageChange(model.page);
+            }
+          }}
+          pageSizeOptions={[20]}
           disableRowSelectionOnClick
         />
       </Box>

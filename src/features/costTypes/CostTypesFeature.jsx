@@ -13,7 +13,6 @@ import {
 } from "../../api/costTypes.api";
 
 import {
-  mapCostTypeToUI,
   mapCostTypesPageToUI,
 } from "../../mappers/costType.mapper";
 
@@ -22,11 +21,20 @@ export default function CostTypesFeature({ authUser }) {
   const [costTypes, setCostTypes] = useState([]);
   const [selectedCostType, setSelectedCostType] = useState(null);
 
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getCostTypes(pageNumber, 20);
+    const mapped = mapCostTypesPageToUI(r);
+
+    setCostTypes(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
   useEffect(() => {
-    getCostTypes().then((r) => {
-      const mapped = mapCostTypesPageToUI(r);
-      setCostTypes(mapped.items);
-    });
+    loadPage(0);
   }, []);
 
   const handleAdd = () => {
@@ -46,27 +54,15 @@ export default function CostTypesFeature({ authUser }) {
 
   const handleSave = async (data) => {
     try {
-      let response;
-
       if (data.id) {
-        response = await updateCostType(data.id, data);
+        await updateCostType(data.id, data);
       } else {
-        response = await createCostType(data);
+        await createCostType(data);
       }
 
-      const mappedSaved = mapCostTypeToUI(response);
-
-      setCostTypes((prev) => {
-        const exists = prev.find((c) => c.id === mappedSaved.id);
-        return exists
-          ? prev.map((c) => (c.id === mappedSaved.id ? mappedSaved : c))
-          : [...prev, mappedSaved];
-      });
-
-      setSelectedCostType(mappedSaved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -79,11 +75,9 @@ export default function CostTypesFeature({ authUser }) {
 
     try {
       await deleteCostType(id);
-      setCostTypes((prev) => prev.filter((c) => c.id !== id));
-      setSelectedCostType(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -92,6 +86,9 @@ export default function CostTypesFeature({ authUser }) {
     return (
       <CostTypesTable
         rows={costTypes}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={handleAdd}
         onView={handleView}
       />

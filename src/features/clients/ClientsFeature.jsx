@@ -11,32 +11,40 @@ import {
   deleteClient,
 } from "../../api/clients.api";
 
+import { mapClientsPageToUI } from "../../mappers/client.mapper";
+
 export default function ClientsFeature({ authUser }) {
   const [mode, setMode] = useState("list");
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
 
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getClients(pageNumber, 20);
+    const mapped = mapClientsPageToUI(r);
+
+    setClients(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
   useEffect(() => {
-    getClients().then((r) => setClients(r.items));
+    loadPage(0);
   }, []);
 
   const handleSave = async (data) => {
     try {
-      const saved = data.id
-        ? await updateClient(data.id, data)
-        : await createClient(data);
+      if (data.id) {
+        await updateClient(data.id, data);
+      } else {
+        await createClient(data);
+      }
 
-      setClients((prev) => {
-        const exists = prev.find((c) => c.id === saved.id);
-        return exists
-          ? prev.map((c) => (c.id === saved.id ? saved : c))
-          : [...prev, saved];
-      });
-
-      setSelectedClient(saved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -49,11 +57,9 @@ export default function ClientsFeature({ authUser }) {
 
     try {
       await deleteClient(id);
-      setClients((prev) => prev.filter((c) => c.id !== id));
-      setSelectedClient(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -62,6 +68,9 @@ export default function ClientsFeature({ authUser }) {
     return (
       <ClientsTable
         rows={clients}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={() => setMode("create")}
         onView={(c) => {
           setSelectedClient(c);

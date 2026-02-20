@@ -1,7 +1,14 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Typography } from "@mui/material";
 
-export default function CostTypesTable({ rows, onAdd, onView }) {
+export default function CostTypesTable({
+  rows,
+  page,
+  totalItems,
+  onPageChange,
+  onAdd,
+  onView,
+}) {
   const columns = [
     {
       field: "name",
@@ -35,8 +42,16 @@ export default function CostTypesTable({ rows, onAdd, onView }) {
           rows={rows || []}
           columns={columns}
           getRowId={(r) => r.id}
+          paginationMode="server"
+          rowCount={totalItems}
+          paginationModel={{ page, pageSize: 20 }}
+          onPaginationModelChange={(model) => {
+            if (model.page !== page) {
+              onPageChange(model.page);
+            }
+          }}
+          pageSizeOptions={[20]}
           disableRowSelectionOnClick
-          pageSizeOptions={[5, 10]}
         />
       </Box>
     </Box>

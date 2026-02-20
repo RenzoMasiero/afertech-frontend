@@ -1,10 +1,16 @@
 // src/api/fixedCosts.api.js
 import { api } from "./http";
-import { mapFixedCostsPageToUI } from "../mappers/fixedCost.mapper";
 
-export async function getFixedCosts() {
-  const response = await api.get("/fixed-costs");
-  return mapFixedCostsPageToUI(response.data);
+/**
+ * GET /fixed-costs
+ * Lista paginada real
+ */
+export async function getFixedCosts(page = 0, size = 20) {
+  const response = await api.get("/fixed-costs", {
+    params: { page, size },
+  });
+
+  return response.data;
 }
 
 export async function createFixedCost(data) {

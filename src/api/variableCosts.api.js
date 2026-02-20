@@ -1,11 +1,15 @@
+// src/api/variableCosts.api.js
 import { api } from "./http";
 
 /**
  * GET /variable-costs
- * Lista paginada de costos variables
+ * Lista paginada real
  */
-export async function getVariableCosts() {
-  const response = await api.get("/variable-costs");
+export async function getVariableCosts(page = 0, size = 20) {
+  const response = await api.get("/variable-costs", {
+    params: { page, size },
+  });
+
   return response.data;
 }
 

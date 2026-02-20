@@ -10,6 +10,11 @@ import {
   updateInvoice,
   deleteInvoice,
 } from "../../api/invoices.api";
+
+import {
+  mapInvoicesPageToUI,
+} from "../../mappers/invoice.mapper";
+
 import { getClients } from "../../api/clients.api";
 import { getProjects } from "../../api/projects.api";
 import { getAllPurchaseOrders } from "../../api/purchaseOrders.api";
@@ -23,8 +28,20 @@ export default function InvoicesFeature({ authUser }) {
   const [projects, setProjects] = useState([]);
   const [purchaseOrders, setPurchaseOrders] = useState([]);
 
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getInvoices(pageNumber, 20);
+    const mapped = mapInvoicesPageToUI(r);
+
+    setInvoices(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
   useEffect(() => {
-    getInvoices().then((r) => setInvoices(r.items));
+    loadPage(0);
     getClients().then((r) => setClients(r.items));
     getProjects().then((r) => setProjects(r.items));
     getAllPurchaseOrders().then((r) => setPurchaseOrders(r.items));
@@ -32,19 +49,14 @@ export default function InvoicesFeature({ authUser }) {
 
   const handleSave = async (data) => {
     try {
-      const saved = data.id
-        ? await updateInvoice(data.id, data)
-        : await createInvoice(data);
+      if (data.id) {
+        await updateInvoice(data.id, data);
+      } else {
+        await createInvoice(data);
+      }
 
-      setInvoices((prev) => {
-        const exists = prev.find((i) => i.id === saved.id);
-        return exists
-          ? prev.map((i) => (i.id === saved.id ? saved : i))
-          : [...prev, saved];
-      });
-
-      setSelectedInvoice(saved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
       return;
     }
@@ -58,8 +70,7 @@ export default function InvoicesFeature({ authUser }) {
 
     try {
       await deleteInvoice(id);
-      setInvoices((prev) => prev.filter((i) => i.id !== id));
-      setSelectedInvoice(null);
+      await loadPage(0);
       setMode("list");
     } catch {
       return;
@@ -70,6 +81,9 @@ export default function InvoicesFeature({ authUser }) {
     return (
       <InvoicesTable
         rows={invoices}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={() => setMode("create")}
         onView={(i) => {
           setSelectedInvoice(i);

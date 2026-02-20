@@ -1,11 +1,15 @@
+// src/api/costTypes.api.js
 import { api } from "./http";
 
 /**
  * GET /cost-types
- * Lista paginada de tipos de costo fijo
+ * Lista paginada real
  */
-export async function getCostTypes() {
-  const response = await api.get("/cost-types");
+export async function getCostTypes(page = 0, size = 20) {
+  const response = await api.get("/cost-types", {
+    params: { page, size },
+  });
+
   return response.data;
 }
 

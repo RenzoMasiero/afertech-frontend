@@ -3,10 +3,13 @@ import { api } from "./http";
 
 /**
  * GET /projects
- * Devuelve lista paginada de proyectos
+ * Lista paginada real
  */
-export async function getProjects() {
-  const response = await api.get("/projects");
+export async function getProjects(page = 0, size = 20) {
+  const response = await api.get("/projects", {
+    params: { page, size },
+  });
+
   return response.data;
 }
 

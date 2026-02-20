@@ -13,7 +13,6 @@ import {
 
 import {
   mapVariableCostTypesPageToUI,
-  mapVariableCostTypeToUI,
 } from "../../mappers/variableCostType.mapper";
 
 export default function VariableCostTypesFeature({ authUser }) {
@@ -21,11 +20,20 @@ export default function VariableCostTypesFeature({ authUser }) {
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
 
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const loadPage = async (pageNumber = 0) => {
+    const r = await getVariableCostTypes(pageNumber, 20);
+    const mapped = mapVariableCostTypesPageToUI(r);
+
+    setTypes(mapped.items);
+    setTotalItems(mapped.totalItems);
+    setPage(mapped.page);
+  };
+
   useEffect(() => {
-    getVariableCostTypes().then((r) => {
-      const mapped = mapVariableCostTypesPageToUI(r);
-      setTypes(mapped.items);
-    });
+    loadPage(0);
   }, []);
 
   const handleAdd = () => {
@@ -45,29 +53,15 @@ export default function VariableCostTypesFeature({ authUser }) {
 
   const handleSave = async (data) => {
     try {
-      let response;
-
       if (data.id) {
-        response = await updateVariableCostType(data.id, data);
+        await updateVariableCostType(data.id, data);
       } else {
-        response = await createVariableCostType(data);
+        await createVariableCostType(data);
       }
 
-      // 🔒 Fuente única de verdad: mapper SIEMPRE
-      const mappedSaved = mapVariableCostTypeToUI(response);
-
-      setTypes((prev) => {
-        const exists = prev.find((t) => t.id === mappedSaved.id);
-        return exists
-          ? prev.map((t) => (t.id === mappedSaved.id ? mappedSaved : t))
-          : [...prev, mappedSaved];
-      });
-
-      // 🔒 Orden explícito: primero data, después modo
-      setSelectedType(mappedSaved);
-      setMode("success");
+      await loadPage(0);
+      setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -80,11 +74,9 @@ export default function VariableCostTypesFeature({ authUser }) {
 
     try {
       await deleteVariableCostType(id);
-      setTypes((prev) => prev.filter((t) => t.id !== id));
-      setSelectedType(null);
+      await loadPage(0);
       setMode("list");
     } catch {
-      // 🔒 Error ya canalizado globalmente (popup)
       return;
     }
   };
@@ -93,6 +85,9 @@ export default function VariableCostTypesFeature({ authUser }) {
     return (
       <VariableCostTypesTable
         rows={types}
+        page={page}
+        totalItems={totalItems}
+        onPageChange={loadPage}
         onAdd={handleAdd}
         onView={handleView}
       />
@@ -130,10 +125,7 @@ export default function VariableCostTypesFeature({ authUser }) {
     );
   }
 
-  if (mode === "success") {
-    // 🔒 NUNCA renderizar Success sin entidad válida
-    if (!selectedType) return null;
-
+  if (mode === "success" && selectedType) {
     return (
       <VariableCostTypeSuccess
         type={selectedType}
