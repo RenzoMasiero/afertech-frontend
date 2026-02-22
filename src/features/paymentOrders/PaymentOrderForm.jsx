@@ -34,6 +34,7 @@ export default function PaymentOrderForm({
       concept: "",
       executed: false,
       executionDate: "",
+      currencyOriginal: "ARS",
     }
   );
 
@@ -44,7 +45,6 @@ export default function PaymentOrderForm({
 
   const handleExecutedChange = (e) => {
     const checked = e.target.checked;
-
     setOrder({
       ...order,
       executed: checked,
@@ -76,6 +76,9 @@ export default function PaymentOrderForm({
 
       executed: order.executed,
       executionDate: order.executed ? order.executionDate : null,
+
+      // 🔥 NUEVO
+      currencyOriginal: order.currencyOriginal,
     });
   };
 
@@ -86,7 +89,6 @@ export default function PaymentOrderForm({
       </Typography>
 
       <Stack spacing={2}>
-        {/* Cliente */}
         <FormControl fullWidth>
           <InputLabel id="client-label">Cliente</InputLabel>
           <Select
@@ -104,7 +106,6 @@ export default function PaymentOrderForm({
           </Select>
         </FormControl>
 
-        {/* Proyecto */}
         <FormControl fullWidth>
           <InputLabel id="project-label">Proyecto</InputLabel>
           <Select
@@ -122,7 +123,6 @@ export default function PaymentOrderForm({
           </Select>
         </FormControl>
 
-        {/* Factura */}
         <FormControl fullWidth>
           <InputLabel id="invoice-label">Factura</InputLabel>
           <Select
@@ -140,7 +140,6 @@ export default function PaymentOrderForm({
           </Select>
         </FormControl>
 
-        {/* Orden de compra derivada */}
         <TextField
           fullWidth
           label="Orden de compra"
@@ -148,7 +147,6 @@ export default function PaymentOrderForm({
           disabled
         />
 
-        {/* N° Orden de pago */}
         <TextField
           fullWidth
           name="paymentOrderNumber"
@@ -157,7 +155,6 @@ export default function PaymentOrderForm({
           onChange={handleChange}
         />
 
-        {/* Fecha emisión */}
         <TextField
           fullWidth
           name="issueDate"
@@ -168,7 +165,21 @@ export default function PaymentOrderForm({
           InputLabelProps={{ shrink: true }}
         />
 
-        {/* Totales */}
+        {/* 🔥 MONEDA */}
+        <FormControl fullWidth>
+          <InputLabel id="currency-label">Moneda</InputLabel>
+          <Select
+            labelId="currency-label"
+            name="currencyOriginal"
+            value={order.currencyOriginal}
+            label="Moneda"
+            onChange={handleChange}
+          >
+            <MenuItem value="ARS">ARS</MenuItem>
+            <MenuItem value="USD">USD</MenuItem>
+          </Select>
+        </FormControl>
+
         <TextField
           fullWidth
           name="totalWithoutTax"
@@ -196,7 +207,6 @@ export default function PaymentOrderForm({
           onChange={handleChange}
         />
 
-        {/* Concepto */}
         <TextField
           fullWidth
           name="concept"
@@ -205,7 +215,6 @@ export default function PaymentOrderForm({
           onChange={handleChange}
         />
 
-        {/* Ejecutada */}
         <FormControlLabel
           control={
             <Switch
@@ -216,7 +225,6 @@ export default function PaymentOrderForm({
           label="Orden ejecutada"
         />
 
-        {/* Fecha ejecución */}
         {order.executed && (
           <TextField
             fullWidth

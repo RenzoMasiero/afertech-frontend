@@ -32,6 +32,7 @@ export default function InvoiceForm({
       totalWithTax: "",
       deferredPaymentDays: "",
       purchaseOrderPercentage: "",
+      currencyOriginal: "ARS",
     }
   );
 
@@ -40,7 +41,6 @@ export default function InvoiceForm({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // 🔥 Si cambia proyecto → limpiar PO seleccionada
     if (name === "projectId") {
       setInvoice({
         ...invoice,
@@ -72,6 +72,7 @@ export default function InvoiceForm({
       totalWithTax: Number(invoice.totalWithTax),
       deferredPaymentDays: Number(invoice.deferredPaymentDays),
       purchaseOrderPercentage: Number(invoice.purchaseOrderPercentage),
+      currencyOriginal: invoice.currencyOriginal,
       id: invoice.id,
     });
   };
@@ -81,7 +82,6 @@ export default function InvoiceForm({
     return clients.filter((c) => c.name.toLowerCase().includes(q));
   }, [clients, clientFilter]);
 
-  // 🔥 FILTRO REAL POR PROYECTO
   const filteredPurchaseOrders = useMemo(() => {
     if (!invoice.projectId) return [];
 
@@ -163,6 +163,86 @@ export default function InvoiceForm({
           </Select>
         </FormControl>
 
+        {/* Datos generales */}
+        <TextField
+          fullWidth
+          name="invoiceNumber"
+          label="N° Factura"
+          value={invoice.invoiceNumber ?? ""}
+          onChange={handleChange}
+        />
+
+        <TextField
+          fullWidth
+          name="issueDate"
+          label="Fecha de factura"
+          type="date"
+          value={invoice.issueDate ?? ""}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
+
+        <TextField
+          fullWidth
+          name="description"
+          label="Descripción"
+          value={invoice.description ?? ""}
+          onChange={handleChange}
+        />
+
+        <TextField
+          fullWidth
+          name="deferredPaymentDays"
+          label="Días de pago diferido"
+          type="number"
+          value={invoice.deferredPaymentDays ?? ""}
+          onChange={handleChange}
+        />
+
+        <TextField
+          fullWidth
+          name="purchaseOrderPercentage"
+          label="% Orden de compra"
+          type="number"
+          value={invoice.purchaseOrderPercentage ?? ""}
+          onChange={handleChange}
+          inputProps={{ min: 0, max: 100 }}
+        />
+
+        {/* Moneda */}
+        <FormControl fullWidth>
+          <InputLabel id="currency-label">Moneda</InputLabel>
+          <Select
+            labelId="currency-label"
+            name="currencyOriginal"
+            value={invoice.currencyOriginal}
+            label="Moneda"
+            onChange={handleChange}
+          >
+            <MenuItem value="ARS">ARS</MenuItem>
+            <MenuItem value="USD">USD</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Importes */}
+        <TextField
+          fullWidth
+          name="totalWithoutTax"
+          label="Total sin IVA"
+          type="number"
+          value={invoice.totalWithoutTax ?? ""}
+          onChange={handleChange}
+        />
+
+        <TextField
+          fullWidth
+          name="totalWithTax"
+          label="Total con IVA"
+          type="number"
+          value={invoice.totalWithTax ?? ""}
+          onChange={handleChange}
+        />
+
         {/* Orden de pago (solo lectura) */}
         <TextField
           fullWidth
@@ -170,32 +250,6 @@ export default function InvoiceForm({
           value={invoice.paymentOrderNumber || "Sin orden de pago"}
           InputProps={{ readOnly: true }}
         />
-
-        {[
-          ["invoiceNumber", "N° Factura"],
-          ["issueDate", "Fecha de factura", "date"],
-          ["description", "Descripción"],
-          ["totalWithoutTax", "Total sin IVA", "number"],
-          ["totalWithTax", "Total con IVA", "number"],
-          ["deferredPaymentDays", "Días de pago diferido", "number"],
-          ["purchaseOrderPercentage", "% Orden de compra", "number"],
-        ].map(([name, label, type]) => (
-          <TextField
-            key={name}
-            fullWidth
-            name={name}
-            label={label}
-            type={type || "text"}
-            value={invoice[name] ?? ""}
-            onChange={handleChange}
-            InputLabelProps={type === "date" ? { shrink: true } : {}}
-            inputProps={
-              name === "purchaseOrderPercentage"
-                ? { min: 0, max: 100 }
-                : undefined
-            }
-          />
-        ))}
       </Stack>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>

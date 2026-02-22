@@ -26,6 +26,7 @@ export default function FixedCostForm({
       allocationMonth: "",
       paymentDate: "",
       description: "",
+      currencyOriginal: "ARS",
     }
   );
 
@@ -50,6 +51,7 @@ export default function FixedCostForm({
       allocationMonth: fixedCost.allocationMonth,
       paymentDate: fixedCost.paymentDate,
       description: fixedCost.description,
+      currencyOriginal: fixedCost.currencyOriginal,
     });
   };
 
@@ -60,7 +62,6 @@ export default function FixedCostForm({
       </Typography>
 
       <Stack spacing={2}>
-        {/* Tipo de costo */}
         <FormControl fullWidth>
           <InputLabel id="cost-type-label">Tipo de costo</InputLabel>
           <Select
@@ -78,7 +79,6 @@ export default function FixedCostForm({
           </Select>
         </FormControl>
 
-        {/* Empleado (solo SUELDO) */}
         {isSalary && (
           <FormControl fullWidth>
             <InputLabel id="employee-label">Empleado</InputLabel>
@@ -98,7 +98,21 @@ export default function FixedCostForm({
           </FormControl>
         )}
 
-        {/* Monto */}
+        {/* 🔥 Moneda */}
+        <FormControl fullWidth>
+          <InputLabel id="currency-label">Moneda</InputLabel>
+          <Select
+            labelId="currency-label"
+            name="currencyOriginal"
+            value={fixedCost.currencyOriginal}
+            label="Moneda"
+            onChange={handleChange}
+          >
+            <MenuItem value="ARS">ARS</MenuItem>
+            <MenuItem value="USD">USD</MenuItem>
+          </Select>
+        </FormControl>
+
         <TextField
           fullWidth
           name="amount"
@@ -108,7 +122,6 @@ export default function FixedCostForm({
           onChange={handleChange}
         />
 
-        {/* Mes imputado */}
         <TextField
           fullWidth
           name="allocationMonth"
@@ -119,7 +132,6 @@ export default function FixedCostForm({
           InputLabelProps={{ shrink: true }}
         />
 
-        {/* Fecha de pago */}
         <TextField
           fullWidth
           name="paymentDate"
@@ -130,7 +142,6 @@ export default function FixedCostForm({
           InputLabelProps={{ shrink: true }}
         />
 
-        {/* Descripción */}
         {!isSalary && (
           <TextField
             fullWidth
@@ -141,7 +152,6 @@ export default function FixedCostForm({
           />
         )}
 
-        {/* Mes del sueldo */}
         {isSalary && (
           <TextField
             fullWidth

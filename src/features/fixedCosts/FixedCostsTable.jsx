@@ -1,12 +1,17 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(typeof value === "number" ? value : 0);
+const formatCurrency = (value, currency) => {
+  const number = typeof value === "number" ? value : 0;
+  const symbol = currency === "USD" ? "U$S " : "$ ";
+
+  return (
+    symbol +
+    new Intl.NumberFormat("es-AR", {
+      maximumFractionDigits: 2,
+    }).format(number)
+  );
+};
 
 export default function FixedCostsTable({
   rows,
@@ -33,7 +38,8 @@ export default function FixedCostsTable({
       field: "amount",
       headerName: "Monto",
       ...(isMobile ? { minWidth: 140 } : { flex: 1 }),
-      renderCell: (params) => formatCurrency(params.row.amount),
+      renderCell: (params) =>
+        formatCurrency(params.row.amount, params.row.currencyOriginal),
     },
     {
       field: "allocationMonth",

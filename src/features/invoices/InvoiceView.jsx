@@ -1,11 +1,17 @@
 import { Box, Typography, Button, Divider } from "@mui/material";
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(typeof value === "number" ? value : 0);
+const formatCurrency = (value, currency) => {
+  const number = typeof value === "number" ? value : 0;
+
+  const symbol = currency === "USD" ? "U$S " : "$ ";
+
+  return (
+    symbol +
+    new Intl.NumberFormat("es-AR", {
+      maximumFractionDigits: 2,
+    }).format(number)
+  );
+};
 
 const formatDateTime = (value) => {
   if (!value) return "";
@@ -34,12 +40,15 @@ export default function InvoiceView({
       <Typography>
         <strong>Cliente:</strong> {invoice.clientName}
       </Typography>
+
       <Typography>
         <strong>N° Factura:</strong> {invoice.invoiceNumber}
       </Typography>
+
       <Typography>
         <strong>Fecha de factura:</strong> {invoice.issueDate}
       </Typography>
+
       <Typography>
         <strong>Descripción:</strong> {invoice.description}
       </Typography>
@@ -47,12 +56,17 @@ export default function InvoiceView({
       <Divider sx={{ my: 2 }} />
 
       <Typography>
-        <strong>Total sin IVA:</strong>{" "}
-        {formatCurrency(invoice.totalWithoutTax)}
+        <strong>Moneda:</strong> {invoice.currencyOriginal}
       </Typography>
+
+      <Typography>
+        <strong>Total sin IVA:</strong>{" "}
+        {formatCurrency(invoice.totalWithoutTax, invoice.currencyOriginal)}
+      </Typography>
+
       <Typography>
         <strong>Total con IVA:</strong>{" "}
-        {formatCurrency(invoice.totalWithTax)}
+        {formatCurrency(invoice.totalWithTax, invoice.currencyOriginal)}
       </Typography>
 
       <Divider sx={{ my: 2 }} />
@@ -89,6 +103,7 @@ export default function InvoiceView({
         <strong>Cargada el:</strong>{" "}
         {formatDateTime(invoice.loadedAt)}
       </Typography>
+
       <Typography>
         <strong>Cargada por:</strong> {invoice.loadedBy}
       </Typography>
@@ -99,6 +114,7 @@ export default function InvoiceView({
             <Button variant="contained" onClick={() => onEdit(invoice)}>
               Editar
             </Button>
+
             <Button
               variant="outlined"
               color="error"

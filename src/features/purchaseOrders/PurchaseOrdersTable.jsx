@@ -1,14 +1,18 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 
-const formatCurrency = (value) =>
-  typeof value === "number"
-    ? new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        maximumFractionDigits: 0,
-      }).format(value)
-    : "-";
+const formatCurrency = (value, currency) => {
+  if (typeof value !== "number") return "-";
+
+  const symbol = currency === "USD" ? "U$S " : "$ ";
+
+  return (
+    symbol +
+    new Intl.NumberFormat("es-AR", {
+      maximumFractionDigits: 2,
+    }).format(value)
+  );
+};
 
 export default function PurchaseOrdersTable({
   rows,
@@ -45,15 +49,16 @@ export default function PurchaseOrdersTable({
       field: "totalWithTax",
       headerName: "Total",
       ...(isMobile ? { minWidth: 140 } : { flex: 1 }),
-      renderCell: (p) => formatCurrency(p.row.totalWithTax),
+      renderCell: (params) =>
+        formatCurrency(params.row.totalWithTax, params.row.currencyOriginal),
     },
     {
       field: "actions",
       headerName: "Acciones",
       sortable: false,
       ...(isMobile ? { minWidth: 120 } : {}),
-      renderCell: (p) => (
-        <Button size="small" onClick={() => onView(p.row)}>
+      renderCell: (params) => (
+        <Button size="small" onClick={() => onView(params.row)}>
           Ver
         </Button>
       ),

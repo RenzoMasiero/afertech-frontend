@@ -1,13 +1,26 @@
 import { Box, Typography, Button, Divider } from "@mui/material";
 
-const formatCurrency = (value) =>
-  typeof value === "number"
-    ? new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        maximumFractionDigits: 0,
-      }).format(value)
-    : "-";
+const formatCurrency = (value, currency) => {
+  if (typeof value !== "number") return "-";
+
+  const symbol = currency === "USD" ? "U$S " : "$ ";
+
+  return (
+    symbol +
+    new Intl.NumberFormat("es-AR", {
+      maximumFractionDigits: 2,
+    }).format(value)
+  );
+};
+
+const formatDateTime = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  return new Intl.DateTimeFormat("es-AR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(date);
+};
 
 export default function PurchaseOrderView({
   order,
@@ -33,7 +46,7 @@ export default function PurchaseOrderView({
       </Typography>
 
       <Typography>
-        <strong>Orden de compra:</strong> {order.purchaseOrderNumber}
+        <strong>N° Orden:</strong> {order.purchaseOrderNumber}
       </Typography>
 
       <Typography>
@@ -43,19 +56,34 @@ export default function PurchaseOrderView({
       <Divider sx={{ my: 2 }} />
 
       <Typography>
+        <strong>Moneda:</strong> {order.currencyOriginal}
+      </Typography>
+
+      <Typography>
         <strong>Total sin IVA:</strong>{" "}
-        {formatCurrency(order.totalWithoutTax)}
+        {formatCurrency(order.totalWithoutTax, order.currencyOriginal)}
       </Typography>
 
       <Typography>
         <strong>Total con IVA:</strong>{" "}
-        {formatCurrency(order.totalWithTax)}
+        {formatCurrency(order.totalWithTax, order.currencyOriginal)}
       </Typography>
 
       <Divider sx={{ my: 2 }} />
 
       <Typography>
-        <strong>Descripción:</strong> {order.description}
+        <strong>Descripción:</strong> {order.description ?? "-"}
+      </Typography>
+
+      <Divider sx={{ my: 2 }} />
+
+      <Typography>
+        <strong>Cargada el:</strong>{" "}
+        {formatDateTime(order.loadedAt)}
+      </Typography>
+
+      <Typography>
+        <strong>Cargada por:</strong> {order.loadedBy}
       </Typography>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
