@@ -30,6 +30,7 @@ export default function VariableCostForm({
       allocationMonth: "",
       paymentDate: "",
       description: "",
+      currencyOriginal: "ARS",
     }
   );
 
@@ -45,6 +46,7 @@ export default function VariableCostForm({
       paymentDate: cost.paymentDate,
       description: cost.description,
       projectId: cost.projectId ? Number(cost.projectId) : null,
+      currencyOriginal: cost.currencyOriginal,
     };
 
     if (isEdit) {
@@ -62,7 +64,6 @@ export default function VariableCostForm({
       </Typography>
 
       <Stack spacing={2}>
-        {/* Tipo de costo */}
         <FormControl fullWidth>
           <InputLabel id="cost-type-label">Tipo de costo</InputLabel>
           <Select
@@ -80,7 +81,6 @@ export default function VariableCostForm({
           </Select>
         </FormControl>
 
-        {/* Proveedor */}
         <FormControl fullWidth>
           <InputLabel id="supplier-label">Proveedor</InputLabel>
           <Select
@@ -98,7 +98,6 @@ export default function VariableCostForm({
           </Select>
         </FormControl>
 
-        {/* Proyecto (opcional) */}
         <FormControl fullWidth>
           <InputLabel id="project-label">Proyecto</InputLabel>
           <Select
@@ -119,7 +118,21 @@ export default function VariableCostForm({
           </Select>
         </FormControl>
 
-        {/* Monto */}
+        {/* 🔥 Moneda */}
+        <FormControl fullWidth>
+          <InputLabel id="currency-label">Moneda</InputLabel>
+          <Select
+            labelId="currency-label"
+            name="currencyOriginal"
+            value={cost.currencyOriginal}
+            label="Moneda"
+            onChange={handleChange}
+          >
+            <MenuItem value="ARS">ARS</MenuItem>
+            <MenuItem value="USD">USD</MenuItem>
+          </Select>
+        </FormControl>
+
         <TextField
           fullWidth
           name="amount"
@@ -129,7 +142,6 @@ export default function VariableCostForm({
           onChange={handleChange}
         />
 
-        {/* Mes de imputación */}
         <TextField
           fullWidth
           name="allocationMonth"
@@ -140,7 +152,6 @@ export default function VariableCostForm({
           InputLabelProps={{ shrink: true }}
         />
 
-        {/* Fecha de pago */}
         <TextField
           fullWidth
           name="paymentDate"
@@ -151,7 +162,6 @@ export default function VariableCostForm({
           InputLabelProps={{ shrink: true }}
         />
 
-        {/* Descripción */}
         <TextField
           fullWidth
           name="description"

@@ -1,13 +1,17 @@
 import { Box, Typography, Button, Divider } from "@mui/material";
 
-const formatCurrency = (value) =>
-  typeof value === "number"
-    ? new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        maximumFractionDigits: 0,
-      }).format(value)
-    : "-";
+const formatCurrency = (value, currency) => {
+  if (typeof value !== "number") return "-";
+
+  const symbol = currency === "USD" ? "U$S " : "$ ";
+
+  return (
+    symbol +
+    new Intl.NumberFormat("es-AR", {
+      maximumFractionDigits: 2,
+    }).format(value)
+  );
+};
 
 export default function VariableCostView({
   cost,
@@ -39,17 +43,22 @@ export default function VariableCostView({
       <Divider sx={{ my: 2 }} />
 
       <Typography>
-        <strong>Mes de imputación:</strong> {cost.allocationMonth}
+        <strong>Moneda:</strong> {cost.currencyOriginal}
       </Typography>
 
       <Typography>
-        <strong>Fecha de pago:</strong> {cost.paymentDate}
+        <strong>Monto:</strong>{" "}
+        {formatCurrency(cost.amount, cost.currencyOriginal)}
       </Typography>
 
       <Divider sx={{ my: 2 }} />
 
       <Typography>
-        <strong>Monto:</strong> {formatCurrency(cost.amount)}
+        <strong>Mes de imputación:</strong> {cost.allocationMonth}
+      </Typography>
+
+      <Typography>
+        <strong>Fecha de pago:</strong> {cost.paymentDate}
       </Typography>
 
       <Divider sx={{ my: 2 }} />

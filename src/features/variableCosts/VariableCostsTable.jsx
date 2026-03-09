@@ -1,12 +1,17 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 
-const formatCurrency = (v) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(typeof v === "number" ? v : 0);
+const formatCurrency = (value, currency) => {
+  const number = typeof value === "number" ? value : 0;
+  const symbol = currency === "USD" ? "U$S " : "$ ";
+
+  return (
+    symbol +
+    new Intl.NumberFormat("es-AR", {
+      maximumFractionDigits: 2,
+    }).format(number)
+  );
+};
 
 export default function VariableCostsTable({
   rows,
@@ -33,7 +38,7 @@ export default function VariableCostsTable({
       field: "projectName",
       headerName: "Proyecto",
       ...(isMobile ? { minWidth: 160 } : { flex: 1.2 }),
-      valueGetter: (v) => v ?? "-",
+      renderCell: (params) => params.row.projectName ?? "-",
     },
     {
       field: "allocationMonth",
@@ -44,15 +49,16 @@ export default function VariableCostsTable({
       field: "amount",
       headerName: "Monto",
       ...(isMobile ? { minWidth: 140 } : { flex: 1 }),
-      renderCell: (p) => formatCurrency(p.row.amount),
+      renderCell: (params) =>
+        formatCurrency(params.row.amount, params.row.currencyOriginal),
     },
     {
       field: "actions",
       headerName: "Acciones",
       sortable: false,
       ...(isMobile ? { minWidth: 120 } : {}),
-      renderCell: (p) => (
-        <Button size="small" onClick={() => onView(p.row)}>
+      renderCell: (params) => (
+        <Button size="small" onClick={() => onView(params.row)}>
           Ver
         </Button>
       ),
@@ -88,3 +94,4 @@ export default function VariableCostsTable({
     </Box>
   );
 }
+

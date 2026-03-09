@@ -16,6 +16,10 @@ export function mapVariableCostToUI(cost) {
     projectName: cost.projectName,
 
     amount: cost.amount,
+
+    // 🔥 MONEDA (faltaba)
+    currencyOriginal: cost.currencyOriginal,
+
     allocationMonth: cost.allocationMonth,
     paymentDate: cost.paymentDate,
 

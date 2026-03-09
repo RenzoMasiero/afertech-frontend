@@ -18,6 +18,9 @@ export function mapPurchaseOrderToUI(order) {
     totalWithoutTax: order.totalWithoutTax,
     totalWithTax: order.totalWithTax,
 
+    // 🔥 MONEDA (faltaba)
+    currencyOriginal: order.currencyOriginal,
+
     description: order.description,
 
     loadedAt: order.loadedAt,

@@ -1,9 +1,5 @@
 // src/mappers/fixedCost.mapper.js
 
-/**
- * Convierte un fixed cost del backend al modelo de UI
- * ⚠️ El modelo UI refleja EXACTAMENTE el response del backend
- */
 function mapFixedCostToUI(fixedCost) {
   return {
     id: fixedCost.id,
@@ -16,6 +12,9 @@ function mapFixedCostToUI(fixedCost) {
 
     amount: fixedCost.amount,
 
+    // 🔥 MONEDA (faltaba)
+    currencyOriginal: fixedCost.currencyOriginal,
+
     allocationMonth: fixedCost.allocationMonth,
     paymentDate: fixedCost.paymentDate,
 
@@ -26,10 +25,6 @@ function mapFixedCostToUI(fixedCost) {
   };
 }
 
-/**
- * Convierte la respuesta paginada del backend
- * en un modelo usable por el frontend
- */
 export function mapFixedCostsPageToUI(page) {
   const items = Array.isArray(page?.items)
     ? page.items.map(mapFixedCostToUI)

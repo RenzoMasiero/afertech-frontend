@@ -27,9 +27,11 @@ export function mapPaymentOrderToUI(order) {
 
     concept: order.concept,
 
-    // 🔹 CAMPOS NUEVOS — OBLIGATORIOS
     executed: order.executed,
     executionDate: order.executionDate,
+
+    // 🔥 MONEDA (nuevo)
+    currencyOriginal: order.currencyOriginal,
 
     loadedAt: order.loadedAt,
     loadedBy: order.loadedBy,

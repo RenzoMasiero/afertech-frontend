@@ -1,13 +1,17 @@
 import { Box, Typography, Button, Divider } from "@mui/material";
 
-const formatCurrency = (value) =>
-  typeof value === "number"
-    ? new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        maximumFractionDigits: 0,
-      }).format(value)
-    : "-";
+const formatCurrency = (value, currency) => {
+  if (typeof value !== "number") return "-";
+
+  const symbol = currency === "USD" ? "U$S " : "$ ";
+
+  return (
+    symbol +
+    new Intl.NumberFormat("es-AR", {
+      maximumFractionDigits: 2,
+    }).format(value)
+  );
+};
 
 export default function PaymentOrderView({
   order,
@@ -49,7 +53,6 @@ export default function PaymentOrderView({
         <strong>Fecha de emisión:</strong> {order.issueDate}
       </Typography>
 
-      {/* Estado de ejecución */}
       <Typography>
         <strong>Ejecutada:</strong> {order.executed ? "Sí" : "No"}
       </Typography>
@@ -63,18 +66,22 @@ export default function PaymentOrderView({
       <Divider sx={{ my: 2 }} />
 
       <Typography>
+        <strong>Moneda:</strong> {order.currencyOriginal}
+      </Typography>
+
+      <Typography>
         <strong>Total sin IVA:</strong>{" "}
-        {formatCurrency(order.totalWithoutTax)}
+        {formatCurrency(order.totalWithoutTax, order.currencyOriginal)}
       </Typography>
 
       <Typography>
         <strong>Total con IVA:</strong>{" "}
-        {formatCurrency(order.totalWithTax)}
+        {formatCurrency(order.totalWithTax, order.currencyOriginal)}
       </Typography>
 
       <Typography>
         <strong>Retenciones:</strong>{" "}
-        {formatCurrency(order.withholdings)}
+        {formatCurrency(order.withholdings, order.currencyOriginal)}
       </Typography>
 
       <Divider sx={{ my: 2 }} />

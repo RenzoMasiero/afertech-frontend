@@ -29,6 +29,7 @@ export default function PurchaseOrderForm({
       totalWithoutTax: "",
       totalWithTax: "",
       description: "",
+      currencyOriginal: "ARS",
     }
   );
 
@@ -36,21 +37,7 @@ export default function PurchaseOrderForm({
     setOrder({ ...order, [e.target.name]: e.target.value });
 
   const handleSubmit = () => {
-    if (isEdit) {
-      onSubmit({
-        id: order.id,
-        clientId: Number(order.clientId),
-        projectId: Number(order.projectId),
-        purchaseOrderNumber: order.purchaseOrderNumber,
-        issueDate: order.issueDate,
-        totalWithoutTax: Number(order.totalWithoutTax),
-        totalWithTax: Number(order.totalWithTax),
-        description: order.description,
-      });
-      return;
-    }
-
-    onSubmit({
+    const payload = {
       clientId: Number(order.clientId),
       projectId: Number(order.projectId),
       purchaseOrderNumber: order.purchaseOrderNumber,
@@ -58,7 +45,15 @@ export default function PurchaseOrderForm({
       totalWithoutTax: Number(order.totalWithoutTax),
       totalWithTax: Number(order.totalWithTax),
       description: order.description,
-    });
+      currencyOriginal: order.currencyOriginal,
+    };
+
+    if (isEdit) {
+      onSubmit({ id: order.id, ...payload });
+      return;
+    }
+
+    onSubmit(payload);
   };
 
   return (
@@ -68,7 +63,6 @@ export default function PurchaseOrderForm({
       </Typography>
 
       <Stack spacing={2}>
-        {/* Cliente */}
         <FormControl fullWidth>
           <InputLabel id="client-label">Cliente</InputLabel>
           <Select
@@ -87,7 +81,6 @@ export default function PurchaseOrderForm({
           </Select>
         </FormControl>
 
-        {/* Proyecto */}
         <FormControl fullWidth>
           <InputLabel id="project-label">Proyecto</InputLabel>
           <Select
@@ -106,7 +99,6 @@ export default function PurchaseOrderForm({
           </Select>
         </FormControl>
 
-        {/* N° Orden de compra */}
         <TextField
           fullWidth
           name="purchaseOrderNumber"
@@ -115,7 +107,6 @@ export default function PurchaseOrderForm({
           onChange={handleChange}
         />
 
-        {/* Fecha */}
         <TextField
           fullWidth
           name="issueDate"
@@ -126,7 +117,21 @@ export default function PurchaseOrderForm({
           InputLabelProps={{ shrink: true }}
         />
 
-        {/* Total sin IVA */}
+        {/* 🔥 Moneda */}
+        <FormControl fullWidth>
+          <InputLabel id="currency-label">Moneda</InputLabel>
+          <Select
+            labelId="currency-label"
+            name="currencyOriginal"
+            value={order.currencyOriginal}
+            label="Moneda"
+            onChange={handleChange}
+          >
+            <MenuItem value="ARS">ARS</MenuItem>
+            <MenuItem value="USD">USD</MenuItem>
+          </Select>
+        </FormControl>
+
         <TextField
           fullWidth
           name="totalWithoutTax"
@@ -136,7 +141,6 @@ export default function PurchaseOrderForm({
           onChange={handleChange}
         />
 
-        {/* Total con IVA */}
         <TextField
           fullWidth
           name="totalWithTax"
@@ -146,7 +150,6 @@ export default function PurchaseOrderForm({
           onChange={handleChange}
         />
 
-        {/* Descripción */}
         <TextField
           fullWidth
           name="description"

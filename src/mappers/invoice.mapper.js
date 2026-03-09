@@ -28,6 +28,12 @@ function mapInvoiceToUI(invoice) {
     totalWithoutTax: invoice.totalWithoutTax,
     totalWithTax: invoice.totalWithTax,
 
+    // 🔥 MONETARIO (FALTABA)
+    currencyOriginal: invoice.currencyOriginal,
+    exchangeRateUsed: invoice.exchangeRateUsed,
+    totalWithoutTaxUsd: invoice.totalWithoutTaxUsd,
+    totalWithTaxUsd: invoice.totalWithTaxUsd,
+
     deferredPaymentDays: invoice.deferredPaymentDays,
     purchaseOrderPercentage: invoice.purchaseOrderPercentage,
 

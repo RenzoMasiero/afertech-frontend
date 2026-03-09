@@ -1,12 +1,17 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(typeof value === "number" ? value : 0);
+const formatCurrency = (value, currency) => {
+  const number = typeof value === "number" ? value : 0;
+  const symbol = currency === "USD" ? "U$S " : "$ ";
+
+  return (
+    symbol +
+    new Intl.NumberFormat("es-AR", {
+      maximumFractionDigits: 2,
+    }).format(number)
+  );
+};
 
 export default function InvoicesTable({
   rows,
@@ -39,14 +44,20 @@ export default function InvoicesTable({
       headerName: "Total sin IVA",
       ...(isMobile ? { minWidth: 160 } : { flex: 1 }),
       renderCell: (params) =>
-        formatCurrency(params.row.totalWithoutTax),
+        formatCurrency(
+          params.row.totalWithoutTax,
+          params.row.currencyOriginal
+        ),
     },
     {
       field: "totalWithTax",
       headerName: "Total con IVA",
       ...(isMobile ? { minWidth: 160 } : { flex: 1 }),
       renderCell: (params) =>
-        formatCurrency(params.row.totalWithTax),
+        formatCurrency(
+          params.row.totalWithTax,
+          params.row.currencyOriginal
+        ),
     },
     {
       field: "actions",
