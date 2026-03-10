@@ -30,7 +30,10 @@ jobs:
           fi
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/renzomasiero/afertech-frontend:${{ env.IMAGE_TAG }} .
+        run: |
+          docker build \
+            --build-arg VITE_API_BASE_URL=https://afertech-backend-production.up.railway.app \
+            -t ghcr.io/renzomasiero/afertech-frontend:${{ env.IMAGE_TAG }} .
 
       - name: Push Docker image
         run: docker push ghcr.io/renzomasiero/afertech-frontend:${{ env.IMAGE_TAG }}
