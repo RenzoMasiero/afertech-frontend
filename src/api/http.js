@@ -5,7 +5,7 @@ const api = axios.create({
 });
 */
 const api = axios.create({
-  baseURL: "https://afertech-backend-production.up.railway.app",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 /* ===== REQUEST INTERCEPTOR ===== */
