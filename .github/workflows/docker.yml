@@ -32,7 +32,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            --build-arg VITE_API_BASE_URL=https://afertech-backend-production.up.railway.app \
+            --build-arg VITE_API_BASE_URL=https://afertech-backend-413472324664.southamerica-east1.run.app \
             -t ghcr.io/renzomasiero/afertech-frontend:${{ env.IMAGE_TAG }} .
 
       - name: Push Docker image
